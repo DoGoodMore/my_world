@@ -5,7 +5,6 @@
                      arrow="never">
             <el-carousel-item>
                 <div class="inner">
-                    11111
                 </div>
                 <img style="width: 100%;" :src="imgArr[0]" alt="img-item">
             </el-carousel-item>

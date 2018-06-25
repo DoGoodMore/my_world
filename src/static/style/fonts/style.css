@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?1o3zp8');
-  src:  url('fonts/icomoon.eot?1o3zp8#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?1o3zp8') format('truetype'),
-    url('fonts/icomoon.woff?1o3zp8') format('woff'),
-    url('fonts/icomoon.svg?1o3zp8#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?2r3ymt');
+  src:  url('fonts/icomoon.eot?2r3ymt#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?2r3ymt') format('truetype'),
+    url('fonts/icomoon.woff?2r3ymt') format('woff'),
+    url('fonts/icomoon.svg?2r3ymt#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -33,6 +33,27 @@
 .icon-date:before {
   content: "\e902";
 }
-.icon-views:before {
+.icon-github:before {
   content: "\e903";
+}
+.icon-good:before {
+  content: "\e904";
+}
+.icon-next:before {
+  content: "\e905";
+}
+.icon-not-good:before {
+  content: "\e906";
+}
+.icon-pre:before {
+  content: "\e907";
+}
+.icon-qq:before {
+  content: "\e908";
+}
+.icon-views:before {
+  content: "\e909";
+}
+.icon-wechart:before {
+  content: "\e90a";
 }

@@ -23,7 +23,8 @@ a {
 }
 body {
     line-height: 1;
-    font-family: arial,STHeiti, "微软雅黑", "Microsoft YaHei","SimSun","宋体";
+    font-family: "Quicksand", sans-serif;
+    /*font-family: arial,STHeiti, "微软雅黑", "Microsoft YaHei","SimSun","宋体";*/
     font-size: 12px;
     color: #222;
     background-color: #FFF;

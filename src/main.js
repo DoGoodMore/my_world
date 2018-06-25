@@ -17,12 +17,17 @@ Vue.directive('hljs', el => {
 
 hljs.initHighlightingOnLoad() ;
 import { Carousel, CarouselItem, Row, Col, Card, Tag, Breadcrumb, BreadcrumbItem,
-    Menu, Submenu, MenuItem, MenuItemGroup,} from 'element-ui' ;
+    Menu, Submenu, MenuItem, MenuItemGroup, Tooltip,  Form, FormItem,
+    Input, Button, Progress, Tabs, TabPane, Dialog, Upload } from 'element-ui' ;
 
 Vue.config.productionTip = false ;
 
 
 Vue.use( Carousel ) ;
+Vue.use( Upload ) ;
+Vue.use( Dialog ) ;
+Vue.use( Tabs ) ;
+Vue.use( TabPane ) ;
 Vue.use( CarouselItem ) ;
 Vue.use( Menu ) ;
 Vue.use( Submenu ) ;
@@ -34,6 +39,12 @@ Vue.use( Card ) ;
 Vue.use( Tag ) ;
 Vue.use( Breadcrumb ) ;
 Vue.use( BreadcrumbItem ) ;
+Vue.use( Tooltip ) ;
+Vue.use( Form ) ;
+Vue.use( FormItem ) ;
+Vue.use( Input ) ;
+Vue.use( Button ) ;
+Vue.use( Progress ) ;
 
 
 new Vue( {
