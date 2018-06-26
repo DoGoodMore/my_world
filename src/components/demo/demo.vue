@@ -11,7 +11,7 @@
                 <li style="left: 100px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -25,7 +25,7 @@
                 <li style="right: 100px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -39,7 +39,7 @@
                 <li style="left: 100px;top: 400px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -53,7 +53,7 @@
                 <li style="right: 100px;top: 400px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -67,7 +67,7 @@
                 <li style="left: 100px;top: 800px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -81,7 +81,7 @@
                 <li style="right: 100px;top: 800px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
-                            <img src="http://119.23.19.145/img/uploads/portfolio/prj-01.jpg" alt="img">
+                            <img :src="imgList" alt="img">
                             <div class="demo-item-inner">
                                 <div class="demo-item-inner-txt">
                                     <h4>STU UNGER RISE</h4>
@@ -98,11 +98,13 @@
 </template>
 
 <script>
+    import imgList from '../../static/img/demo-list.jpg' ;
     export default {
         name: "demo",
         data() {
             return {
-                activeName: 'first'
+                activeName: 'first',
+                imgList
             }
         }
     }
