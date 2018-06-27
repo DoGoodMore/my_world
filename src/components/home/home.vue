@@ -14,8 +14,15 @@
 </template>
 
 <script>
+    import { testRequest } from '@/api/common'
     export default {
-        name: "home"
+        name: "home",
+        created() {
+            testRequest( { test: `test_1_1` } )
+                .then( response => {
+                    console.log( response )
+                } )
+        }
     }
 </script>
 

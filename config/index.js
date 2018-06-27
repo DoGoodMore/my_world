@@ -10,7 +10,14 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+        "/proxy" : {
+            target: 'http://172.16.28.97:3001',
+            pathRewrite: {
+                '^/proxy' : "" //需要reWrite重写的请求路径
+            }
+        }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

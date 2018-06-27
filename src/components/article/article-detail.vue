@@ -24,7 +24,7 @@
         </el-menu>
         <el-breadcrumb style="height: 50px;line-height: 50px;margin-top: 20px;background-color: rgb(240, 240, 240);"
                        separator=">">
-            <el-breadcrumb-item><a href="javascript:;">所有文章</a> </el-breadcrumb-item>
+            <el-breadcrumb-item><router-link to="/home/article-list">所有文章</router-link> </el-breadcrumb-item>
             <el-breadcrumb-item><a href="/">前端</a></el-breadcrumb-item>
             <el-breadcrumb-item><a href="javascript:;">Javascript</a></el-breadcrumb-item>
             <el-breadcrumb-item><a href="javascript:;">初识javascript</a></el-breadcrumb-item>
