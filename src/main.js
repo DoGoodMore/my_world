@@ -18,12 +18,17 @@ Vue.directive('hljs', el => {
 hljs.initHighlightingOnLoad() ;
 import { Carousel, CarouselItem, Row, Col, Card, Tag, Breadcrumb, BreadcrumbItem,
     Menu, Submenu, MenuItem, MenuItemGroup, Tooltip,  Form, FormItem,
-    Input, Button, Progress, Tabs, TabPane, Dialog, Upload } from 'element-ui' ;
+    Input, Button, Progress, Tabs, TabPane, Dialog, Upload, Message,
+    Select, Option } from 'element-ui' ;
 
 Vue.config.productionTip = false ;
 
+// Vue.use( Message ) ;
+Vue.prototype.$message = Message ;
 
 Vue.use( Carousel ) ;
+Vue.use( Select ) ;
+Vue.use( Option ) ;
 Vue.use( Upload ) ;
 Vue.use( Dialog ) ;
 Vue.use( Tabs ) ;
