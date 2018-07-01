@@ -45,6 +45,10 @@ const routes = [
       {
         path: '/home/article-list',
         component: _import( 'article/article-list' )
+      },
+      {
+        path: '/home/settings',
+        component: _import( 'setting/settings' )
       }
     ],
     component: _import( 'home/home' )

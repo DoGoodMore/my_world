@@ -3,7 +3,9 @@
         <!--
                  :rules="rules"-->
         <el-form :label-position="`left`"
+                 :ref="`form`"
                  label-width="100px"
+                 :rules="rules"
                  :model="form">
             <el-form-item label="标题" prop="title">
                 <el-input v-model="form.title"
@@ -45,6 +47,24 @@
                           placeholder="请输入描述文字"
                           v-model="form.description"></el-input>
             </el-form-item>
+            <el-form-item label="是否原创" prop="original">
+                <el-radio v-model="form.original"
+                          :label="true">是</el-radio>
+                <el-radio v-model="form.original"
+                          :label="false">否</el-radio>
+            </el-form-item>
+            <el-form-item v-if="!form.original"
+                          label="原作者"
+                          prop="fromAuthor">
+                <el-input v-model="form.from.author"
+                          placeholder="请输入原文作者"></el-input>
+            </el-form-item>
+            <el-form-item v-if="!form.original"
+                          label="来源链接"
+                          prop="fromUrl">
+                <el-input v-model="form.from.fromUrl"
+                          placeholder="请输入原文链接"></el-input>
+            </el-form-item>
             <el-form-item label="内容" prop="content">
                 <div>
                     <tinymce :height="300" v-model="form.content"></tinymce>
@@ -62,7 +82,7 @@
 
 <script>
     import Tinymce from '@/components/Tinymce'
-    import { addImg } from '@/api/article'
+    import { add } from '@/api/article'
     export default {
         name: 'tinymce-demo',
         components: { Tinymce },
@@ -86,14 +106,64 @@
                     tags: [],
                     content: ``,
                     title: ``,
-                    imgFile: '',
-                    fileType: ''
+                    imgFile: ``,
+                    fileType: ``,
+                    original: true,
+                    from: {
+                        author: ``,
+                        fromUrl: ``
+                    }
+                },
+                rules: {
+                    description: [
+                        { required: true, message: '请输入对应内容', trigger: 'blur' },
+                    ],
+                    content: [
+                        { required: true, message: '请输入对应内容给', trigger: 'blur' },
+                    ],
+                    title: [
+                        { required: true, message: '请输入文章标题', trigger: 'blur' },
+                    ],
+                    original: [
+                        { required: true, message: '请选择是否为原创', trigger: 'blur' }
+                    ]
                 }
             }
         },
         methods: {
             addArticleSubmit() {
-                console.log( this.form )
+                this.$refs[`form`].validate((valid) => {
+                    if (valid) {
+                        if ( !this.form.tags.length ) {
+                            this.$message( {
+                                message: '请选择正确的标签列表',
+                                type: 'error'
+                            } )
+                            return
+                        }
+                        if ( !this.form.original ) {
+                            if ( !this.form.from.author || !this.form.from.fromUrl) {
+                                this.$message( {
+                                    message: '请输入正确的来源信息',
+                                    type: 'error'
+                                } )
+                                return
+                            }
+                        }
+                        add( this.form )
+                            .then( res => {
+                                const { status } = res ;
+                                if ( status === 0 ) {
+                                    this.$message( {
+                                        message: '操作成功',
+                                        type: 'success'
+                                    } )
+                                    this.$router.push( '/home/article-list' ) ;
+                                }
+                            } )
+                            .catch( err => console.log( err ) )
+                    }
+                })
             },
             handleRemove(file, fileList) {
                 console.log(file, fileList);
@@ -122,11 +192,6 @@
                     _this.parseBase64(file).then(result => {
                         _this.form.imgFile = result ? result.split(';')[1].split(',')[1] : ''
                         _this.form.fileType = file.type
-                        addImg(_this.form).then(response => {
-                            resolve()
-                        }).catch(() => {
-                            reject()
-                        })
                     })
                 })
             },

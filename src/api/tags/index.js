@@ -2,24 +2,23 @@ import request from '@/util/request' ;
 import proxy from '../proxy' ;
 
 /**
- *
+ *  新增标签列表接口
  * @param data
  */
-export function addImg(data) {
+export function addNewTag(data) {
     return request( {
-        url: proxy + '/article/posts',
+        url: proxy + '/tags/addNewTag',
         method: 'POST',
         data
     } )
 }
-
 /**
- *  添加新的文章
+ *  获取对应标签列表
  * @param data
  */
-export function add(data) {
+export function getList(data) {
     return request( {
-        url: proxy + '/article/add',
+        url: proxy + '/tags/getTagList',
         method: 'POST',
         data
     } )

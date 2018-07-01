@@ -5,6 +5,7 @@
           <li><router-link to="/home/index">网站首页</router-link></li>
           <li><router-link to="/home/demo">demo</router-link></li>
           <li><router-link to="/home/article">技术文章</router-link></li>
+            <li><router-link to="/home/settings">网站设置</router-link></li>
           <li><router-link to="/home/about">关于</router-link></li>
           <li><router-link to="/home/contact">联系我</router-link></li>
         </ul>
@@ -18,10 +19,6 @@
     export default {
         name: "home",
         created() {
-            testRequest( { test: `test_1_1` } )
-                .then( response => {
-                    console.log( response )
-                } )
         }
     }
 </script>
