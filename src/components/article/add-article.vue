@@ -14,6 +14,7 @@
             <el-form-item label="标签" prop="tag">
                 <el-select v-model="form.tags"
                            style="width: 100%;"
+                           filterable
                            multiple
                            placeholder="请选择对应标签">
                     <el-option
@@ -82,22 +83,14 @@
 
 <script>
     import Tinymce from '@/components/Tinymce'
-    import { add } from '@/api/article'
+    import { add } from '@/api/article' ;
+    import { getAllTags } from "@/api/tags";
     export default {
         name: 'tinymce-demo',
         components: { Tinymce },
         data() {
             return {
-                tagsList: [
-                    {
-                        label: 'Javascript',
-                        value: '1'
-                    },
-                    {
-                        label: 'Node',
-                        value: '2'
-                    }
-                ],
+                tagsList: [],
                 fileList: [],
                 dialogImageUrl: '',
                 dialogVisible: false,
@@ -203,7 +196,19 @@
                         resolve(this.result)
                     }
                 })
+            },
+            getTagList() {
+                getAllTags( {} )
+                    .then( res => {
+                        const { status, data } = res ;
+                        if ( status === 0 ) {
+                            this.tagsList = data ;
+                        }
+                    } )
             }
+        },
+        created() {
+            this.getTagList() ;
         }
     }
 </script>

@@ -37,6 +37,13 @@
                              class="clear-fix">
                             <div class="card-left">
                                 <div class="card-title">{{item.title}}</div>
+                                <!--<a href="javascript:;"
+                                   style="display: inline-block;"
+                                   :key="itemInner.value"
+                                   v-for="itemInner in item.tags">
+                                        <span class="tag"
+                                              :style="{ background: changeColorToRgb( itemInner.background, .2 ), color: itemInner.color, borderColor: changeColorToRgb( itemInner.color, .1 ) }">{{itemInner.label}}</span>
+                                                        </a>-->
                                 <el-tag v-for="( itemInner, indexInner ) in item.tags"
                                         style="margin-right: 5px;"
                                         size="mini"
@@ -79,6 +86,8 @@
     import imgTest1 from '../../static/img/img-test-1.jpg' ;
     import imgTest2 from '../../static/img/img-test-2.jpg' ;
     import rightShow from '../home/components/right-show' ;
+    import { getArticleListPage } from "@/api/article";
+
     export default {
         components: { rightShow },
         data() {
@@ -225,13 +234,44 @@
                         title: '排序算法之冒泡排序 － java实现',
                         type: 'JAVA'
                     }
-                ]
+                ],
+                listQuery: {
+                    pageNum: 1,
+                    pageSize: 5
+                },
             }
         },
         methods: {
-            testClick() {
-                console.log( 1111111 )
+            changeColorToRgb(hex, op) {
+                let color = [], rgb = [];
+                hex = hex.replace(/#/,"");
+
+                if (hex.length === 3) { // 处理 "#abc" 成 "#aabbcc"
+                    let tmp = [];
+                    for (let i = 0; i < 3; i++) {
+                        tmp.push(hex.charAt(i) + hex.charAt(i));
+                    }
+                    hex = tmp.join("");
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    color[i] = "0x" + hex.substr(i * 2, 2);
+                    rgb.push(parseInt( Number( color[ i ] )) );
+                }
+                return "rgba(" + rgb.join(",") + ", " + ( op ? op : 1 ) + ")";
+            },
+            getArticleListRecent() {
+                getArticleListPage( this.listQuery ).then( res => {
+                    console.log( res ) ;
+                    const { status, data } = res ;
+                    if ( status === 0 ) {
+                        //this.cardDataArr = data ;
+                    }
+                } )
             }
+        },
+        created() {
+            this.getArticleListRecent() ;
         }
     }
 </script>
@@ -262,5 +302,15 @@
 }
 .card-data-info > a > i {
     font-weight: bold!important;
+}
+.tag {
+    display: inline-block;
+    padding: 0 5px;
+    height: 20px;
+    line-height: 19px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 </style>

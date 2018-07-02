@@ -24,3 +24,14 @@ export function add(data) {
         data
     } )
 }
+/**
+ *  获取最近的文章列表
+ * @param data
+ */
+export function getArticleListPage(data) {
+    return request( {
+        url: proxy + '/article/getArticleListPage',
+        method: 'POST',
+        data
+    } )
+}

@@ -6,13 +6,16 @@
         </el-card>
 
         <!--热门标签-->
-        <el-card style="margin-top: 20px;" shadow="hover">
+        <el-card style="margin-top: 20px;min-height: 150px;" shadow="hover">
             <div style="margin-bottom: 10px;">热门标签</div>
-            <el-tag v-for="( item, index ) in tagsHot"
-                    style="margin-right: 10px;margin-top: 10px;"
-                    size="mini"
-                    :key="index"
-                    :type="item.type">{{item.text}}</el-tag>
+            <a href="javascript:;"
+               class="margin-top-tag"
+               style="display: inline-block;"
+               :key="item.value"
+               v-for="item in tagsHot">
+                <span class="tag"
+                      :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span>
+            </a>
         </el-card>
 
         <!--热门发布-->
@@ -34,52 +37,13 @@
 </template>
 
 <script>
+    import { getHotTags } from "@/api/tags" ;
+
     export default {
         name: "right-show",
         data() {
             return {
-                tagsHot: [
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    },
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    }
-                ],
+                tagsHot: [],
                 hotArticle: [
                     {
                         title: '排序算法之冒泡排序 － java实现',
@@ -103,10 +67,54 @@
                     }
                 ]
             }
+        },
+        methods: {
+            changeColorToRgb(hex, op) {
+                let color = [], rgb = [];
+                hex = hex.replace(/#/,"");
+
+                if (hex.length === 3) { // 处理 "#abc" 成 "#aabbcc"
+                    let tmp = [];
+                    for (let i = 0; i < 3; i++) {
+                        tmp.push(hex.charAt(i) + hex.charAt(i));
+                    }
+                    hex = tmp.join("");
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    color[i] = "0x" + hex.substr(i * 2, 2);
+                    rgb.push(parseInt( Number( color[ i ] )) );
+                }
+                return "rgba(" + rgb.join(",") + ", " + ( op ? op : 1 ) + ")";
+            },
+            getHotTags() {
+                getHotTags( {} ).then( res => {
+                    const { status, data } = res ;
+                    if ( status === 0 ) {
+                        this.tagsHot = data ;
+                    }
+                } )
+            }
+        },
+        created() {
+            this.getHotTags() ;
         }
     }
 </script>
 
 <style scoped>
-
+.tag {
+    display: inline-block;
+    padding: 0 10px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.margin-top-tag {
+    margin-top: 10px;
+    margin-right: 10px;
+}
 </style>

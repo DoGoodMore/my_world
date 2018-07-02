@@ -19,13 +19,17 @@ hljs.initHighlightingOnLoad() ;
 import { Carousel, CarouselItem, Row, Col, Card, Tag, Breadcrumb, BreadcrumbItem,
     Menu, Submenu, MenuItem, MenuItemGroup, Tooltip,  Form, FormItem,
     Input, Button, Progress, Tabs, TabPane, Dialog, Upload, Message,
-    Select, Option, Radio, Table, TableColumn, Pagination, ColorPicker } from 'element-ui' ;
+    Select, Option, Radio, Table, TableColumn, Pagination, ColorPicker,
+    Loading, MessageBox, Transfer } from 'element-ui' ;
 
 Vue.config.productionTip = false ;
 
 Vue.prototype.$message = Message ;
-
+Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$confirm = MessageBox.confirm ;
 Vue.use( Carousel ) ;
+Vue.use( Transfer ) ;
+Vue.use( Loading ) ;
 Vue.use( ColorPicker ) ;
 Vue.use( Pagination ) ;
 Vue.use( TableColumn ) ;

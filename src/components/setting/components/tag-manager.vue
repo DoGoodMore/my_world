@@ -1,8 +1,9 @@
 <template>
-    <div style="min-height: 650px;">
+    <div>
         <el-table :key='tableKey'
                   :data="list"
                   element-loading-text="loading"
+                  v-loading="tableLoading"
                   border
                   fit
                   highlight-current-row
@@ -10,28 +11,45 @@
             <el-table-column type="index" width="50"></el-table-column>
             <el-table-column align="center" label="内容">
                 <template slot-scope="scope">
-                    <span>{{scope.row.label}}</span>
+                    <template v-if="scope.row.edit">
+                        <el-input class="edit-input"
+                                  size="small"
+                                  v-model="scope.row.label"></el-input>
+                    </template>
+                    <span v-else>{{scope.row.label}}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="背景">
                 <template slot-scope="scope">
-                    <span>{{scope.row.background}}</span>
-                    <span style="display: inline-block;width: 20px;height: 20px;vertical-align: middle;"
-                          :style="{ background: scope.row.color }"></span>
+                    <template v-if="scope.row.edit">
+                        <el-color-picker v-model="scope.row.background"></el-color-picker>
+                    </template>
+                    <div v-else>
+                        <span>{{scope.row.background}}</span>
+                        <span style="display: inline-block;width: 20px;height: 20px;vertical-align: middle;"
+                              :style="{ background: scope.row.background }"></span>
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="文字">
                 <template slot-scope="scope">
-                    <span>{{scope.row.color}}</span>
-                    <span style="display: inline-block;width: 20px;height: 20px;vertical-align: middle;"
-                          :style="{ background: scope.row.color }"></span>
+                    <template v-if="scope.row.edit">
+                        <el-color-picker v-model="scope.row.color"></el-color-picker>
+                    </template>
+                    <div v-else>
+                        <span>{{scope.row.color}}</span>
+                        <span style="display: inline-block;width: 20px;height: 20px;vertical-align: middle;"
+                              :style="{ background: scope.row.color }"></span>
+                    </div>
                 </template>
             </el-table-column>
+
             <el-table-column align="center" width="200" label="创建时间">
                 <template slot-scope="scope">
                     <span>{{changTime( scope.row.create )}}</span>
                 </template>
             </el-table-column>
+
             <el-table-column align="center" width="200" label="更新时间">
                 <template slot-scope="scope">
                     <span>{{changTime( scope.row.update )}}</span>
@@ -42,7 +60,27 @@
                              width="250"
                              class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="success" @click="handleDetail(scope.row)">测试</el-button>
+                    <el-button size="mini"
+                               v-if="!scope.row.edit"
+                               type="success"
+                               @click="scope.row.edit = true">编辑</el-button>
+                    <el-button size="mini"
+                               v-else
+                               type="success"
+                               @click="handleUpdate(scope.row)">修改</el-button>
+
+                    <el-button size="mini"
+                               v-if="scope.row.hot"
+                               type="warning"
+                               @click="hotTagUpdate( scope.row )">取消热门</el-button>
+                    <el-button size="mini"
+                               v-else
+                               type="success"
+                               @click="hotTagUpdate( scope.row )">添加热门</el-button>
+                    <el-button size="mini"
+                               type="danger"
+                               @click="handleDelete(scope.row)">删除</el-button>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -95,11 +133,12 @@
 </template>
 
 <script>
-    import { addNewTag, getList } from '@/api/tags' ;
+    import { addNewTag, getList, updateTag, delTag, updateHotTags } from '@/api/tags' ;
     export default {
         name: "tag-manager",
         data() {
             return {
+                tableLoading: false,
                 list: [],
                 tableKey: 0,
                 total: 0,
@@ -116,6 +155,41 @@
             }
         },
         methods: {
+            hotTagUpdate( row ) {
+                console.log( row )
+                updateHotTags( { _id: row._id, hot: !row.hot } )
+                    .then( res => {
+                        const { status } = res ;
+                        if ( status === 0 ) {
+                            this.$message( {
+                                message: '操作成功',
+                                type: 'success'
+                            } ) ;
+                            this.getDataList() ;
+                        }
+                    } )
+            },
+            handleDelete(row) {
+                const _this = this
+                _this.$confirm(`确定要删除吗`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( () => {
+                    delTag( { _id: row._id } )
+                        .then( res => {
+                            const { status } = res ;
+                            if ( status === 0 ) {
+                                this.$message( {
+                                    message: '删除成功',
+                                    type: 'success'
+                                } ) ;
+                                this.getDataList() ;
+                            }
+                        } )
+                } )
+                    .catch( () => {} )
+            },
             changTime(time, day) {
                 if (!time) {
                     return '暂无数据'
@@ -158,16 +232,33 @@
                     color: '#000'
                 } )
             },
-            handleDetail(row) {
-
+            handleUpdate(row) {
+                updateTag( row )
+                    .then( res => {
+                        const { status } = res ;
+                        if ( status === 0 ) {
+                            this.$message( {
+                                message: '修改成功',
+                                type: 'success'
+                            } )
+                            this.getDataList() ;
+                        }
+                    } )
             },
             getDataList() {
+                this.tableLoading = true ;
                 return getList( this.listQuery )
                     .then( res => {
                         const { status, data, total } = res ;
                         if ( status === 0 ) {
                             this.list = data ;
+                            if ( this.list && this.list.length ) {
+                                this.list.map( item => {
+                                    item.edit = false ;
+                                } )
+                            }
                             this.total = total ;
+                            this.tableLoading = false ;
                         }
                     } )
             },

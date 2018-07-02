@@ -6,14 +6,17 @@
             <el-tab-pane label="标签管理"
                          :lazy="true"
                          name="tag-manager">
-                <tag-manager></tag-manager>
+                <div class="setting-min-height">
+                    <tag-manager></tag-manager>
+                </div>
             </el-tab-pane>
-            <el-tab-pane label="配置管理"
+            <el-tab-pane label="文章管理"
                          :lazy="true"
-                         name="second">配置管理</el-tab-pane>
-            <el-tab-pane label="角色管理"
-                         :lazy="true"
-                         name="third">角色管理</el-tab-pane>
+                         name="third">
+                <div class="setting-min-height">
+                    <article-manager></article-manager>
+                </div>
+            </el-tab-pane>
             <el-tab-pane label="定时任务补偿"
                          :lazy="true"
                          name="fourth">定时任务补偿</el-tab-pane>
@@ -23,9 +26,10 @@
 
 <script>
     import tagManager from './components/tag-manager' ;
+    import articleManager from './components/article-manager' ;
     export default {
         name: "settings",
-        components: { tagManager },
+        components: { tagManager, articleManager },
         data() {
             return {
                 activeName: 'tag-manager'
@@ -39,5 +43,8 @@
 </script>
 
 <style scoped>
-
+.setting-min-height {
+    position: relative;
+    min-height: 650px;
+}
 </style>
