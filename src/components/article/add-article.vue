@@ -84,7 +84,7 @@
 <script>
     import Tinymce from '@/components/Tinymce'
     import { add } from '@/api/article' ;
-    import { getAllTags } from "@/api/tags";
+    import { getAllTags } from "@/api/tags" ;
     export default {
         name: 'tinymce-demo',
         components: { Tinymce },

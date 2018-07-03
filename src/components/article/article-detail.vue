@@ -34,13 +34,20 @@
         <el-row style="margin-top: 20px;" :gutter="20">
             <el-col :span="18">
                 <div class="article-title">
-                    浅谈使用 Vue 构建前端 10w+ 代码量的单页面应用开发底层
+                    {{articleData ? articleData.title : '数据获取失败'}}
                 </div>
                 <div class="article-from">
-                    <div class="copyright-area">原文出处： <a target="_blank" href="https://github.com/PerseveranceZ/vue-develop-template/blob/master/docs/tutorial.md">Zero</a>&nbsp;&nbsp;&nbsp;</div>
+                    <div v-if="!articleData ? articleData.original : false"
+                         class="copyright-area">
+                        原文出处：<a target="_blank"
+                                :href="articleData ? articleData.from.fromUrl : 'javascript:;'">{{articleData ? articleData.from.author : '数据获取失败'}}</a>
+                    </div>
+                    <div v-else
+                         class="copyright-area">文章为博主原创内容 如有转载请注明出处</div>
                 </div>
-                <div class="content">
-                    <ul>
+                <div class="editor-content content" v-html="articleData ? articleData.content : '数据获取失败'"></div>
+                <!--<div class="content" v-html="articleData ? articleData.content : '数据获取失败'">
+                    &lt;!&ndash;<ul>
                         <li><strong>单页面（SPA）</strong>
                             <ul>
                                 <li>优点：体验好，路由之间跳转流程，可定制转场动画，使用了懒加载可有效减少首页白屏时间，相较于多页面减少了用户访问静态资源服务器的次数等。</li>
@@ -71,7 +78,7 @@
     &lt;/head&gt;
 
     &lt;body&gt;
-                                <!-- Crayon Syntax Highlighter v2.7.1.1 -->
+                                &lt;!&ndash; Crayon Syntax Highlighter v2.7.1.1 &ndash;&gt;
       &lt;script type=&quot;text/javascript&quot;&gt;
         xmlDoc = loadXMLDoc
     (&quot;books.xml&quot;);
@@ -128,21 +135,27 @@
                                 <li>不过这种方式也有他的好处，假如你的 SPA 中，有类似文章分享这样（没有后端直出，后端返 HTML 串的情况下），想保证用户体验在 SPA 中开发一个页面，在 MPA 中也开发一个页面，去掉没用的依赖，或者直接用原生 JS 来开发，分享出去是 MPA 的文章页面，这样可以<strong>加快分享出去的打开速度，同时也能减少静态资源服务器的压力</strong>，因为如果分享出去的是 SPA 的文章页面，那 SPA 所需的静态资源至少都需要去进行协商请求,当然如果服务配置了强缓存就忽略以上所说。</li>
                             </ul>
                         </li>
-                    </ul>
-                </div>
+                    </ul>&ndash;&gt;
+                </div>-->
                 <div style="margin-top: 30px;" class="bottom">
                     <div class="tips">
                         <span style="margin-right: 10px;">标签:</span>
-                        <el-tag v-for="( item, index ) in tagsArr"
+                        <a href="javascript:;"
+                           v-for="item in articleData.tags"
+                           :key="item.value"
+                           style="display: inline-block;margin-right: 10px;">
+                            <span class="tag"
+                                  :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span></a>
+                        <!--<el-tag v-for="( item, index ) in tagsArr"
                                 :key="index"
                                 size="mini"
                                 :type="item.type"
-                                style="margin-right: 10px;">{{item.text}}</el-tag>
+                                style="margin-right: 10px;">{{item.text}}</el-tag>-->
                     </div>
                     <div class="actions">
-                        <a href="javascript:;"><i class="icon-good"></i>112</a>
-                        <a href="javascript:;"><i class="icon-not-good"></i>5</a>
-                        <a href="javascript:;"><i class="icon-coments"></i>6</a>
+                        <a href="javascript:;"><i class="icon-good"></i>{{articleData[ `good` ]}}</a>
+                        <a href="javascript:;"><i class="icon-not-good"></i>{{articleData[ `noGood` ]}}</a>
+                        <a href="javascript:;"><i class="icon-coments"></i>{{articleData ? articleData.comments.length : 0}}</a>
                     </div>
                     <div class="pre-or-next">
                         <div class="pre">
@@ -156,28 +169,22 @@
                     </div>
                     <div class="comments">
                         <h4>评论列表</h4>
-                        <ul>
-                            <li>
+                        <ul v-if="articleData ? articleData.comments.length : false">
+                            <li v-for="( comment, index ) in articleData.comments"
+                                :key="index">
                                 <div class="comment-header">
-                                    #<span>1</span>楼
-                                    <span class="date">2017-04-20 14:10</span>
-                                    <i class="username">不明飞行物</i>
+                                    #<span>{{index + 1}}</span>楼
+                                    <span class="date">{{ changTime( comment.date ) }}</span>
+                                    <i class="username">{{ comment.username }}</i>
                                 </div>
                                 <p class="comment-content">
-                                    非常有用 感谢
-                                </p>
-                            </li>
-                            <li>
-                                <div class="comment-header">
-                                    #<span>2</span>楼
-                                    <span class="date">2017-04-20 14:10</span>
-                                    <i class="username">不明飞行物</i>
-                                </div>
-                                <p class="comment-content">
-                                    非常有用 感谢
+                                    {{comment.content}}
                                 </p>
                             </li>
                         </ul>
+                        <div class="no-comments" v-else>
+                            暂无评论
+                        </div>
                     </div>
                     <div class="related-articles">
                         <h4>相关文章</h4>
@@ -206,6 +213,8 @@
 
 <script>
     import rightShow from '../home/components/right-show' ;
+    import { getArticleDetail } from '@/api/article' ;
+    import { getAllTags } from '@/api/tags' ;
     export default {
         components : { rightShow },
         name: "article-detail",
@@ -224,13 +233,118 @@
                         type: 'error',
                         text: 'Vue'
                     }
-                ]
+                ],
+                articleId: '',
+                articleData: {
+                    comments: [],
+                    content: '',
+                    create: '',
+                    description: '',
+                    from: {},
+                    good: '',
+                    hot: '',
+                    noGood: '',
+                    original: '',
+                    poster: '',
+                    tags: [],
+                    title: '',
+                    update: '',
+                    views: '',
+                    __v: '',
+                    _id: '',
+                }
             }
         },
         methods: {
+            changeColorToRgb(hex, op) {
+                let color = [], rgb = [];
+                hex = hex.replace(/#/,"");
+
+                if (hex.length === 3) { // 处理 "#abc" 成 "#aabbcc"
+                    let tmp = [];
+                    for (let i = 0; i < 3; i++) {
+                        tmp.push(hex.charAt(i) + hex.charAt(i));
+                    }
+                    hex = tmp.join("");
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    color[i] = "0x" + hex.substr(i * 2, 2);
+                    rgb.push(parseInt( Number( color[ i ] )) );
+                }
+                return "rgba(" + rgb.join(",") + ", " + ( op ? op : 1 ) + ")";
+            },
+            changTime(time, day) {
+                if (!time) {
+                    return '暂无数据'
+                }
+                const testTime = new Date( time ) ;
+                const year = testTime.getFullYear() ;
+                const month = testTime.getMonth() + 1 ;
+                const date = testTime.getDate() ;
+                const hour = testTime.getHours() ;
+                const minutes = testTime.getMinutes() ;
+                const seconds = testTime.getSeconds() ;
+                return day ? `${year}年${month}月${date}日` : `${year}年${month}月${date}日-${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+            },
             handleSelect(_, __) {
                 console.log( _, __ )
+            },
+            getArticleDetail() {
+                return new Promise( ( resolve, reject ) => {
+                    getArticleDetail( { id: this.articleId } ).then( res => {
+                        const { status, data } = res ;
+                        if ( status === 0 ) {
+                            resolve( data )
+                        } else {
+                            resolve( [] )
+                        }
+                    } ).catch( err => reject( err ) )
+                } )
+            },
+            getTagList() {
+                return new Promise( ( resolve, reject ) => {
+                    getAllTags( {} )
+                        .then( res => {
+                            const { status, data } = res ;
+                            if ( status === 0 ) {
+                                resolve( data ) ;
+                            } else {
+                                resolve( [] ) ;
+                            }
+                        } )
+                        .catch( err => reject( err ) )
+                } )
             }
+        },
+        created() {
+            this.articleId = this.$route.query[ `id` ] ;
+            if ( !this.articleId ) {
+                this.$message( {
+                    message: '获取文章信息失败',
+                    type: 'error'
+                } ) ;
+                this.$router.push( '/home/article' ) ;
+            }
+            Promise.all( [ this.getArticleDetail(), this.getTagList() ] )
+                .then( value => {
+                    const article = value[ 0 ] ;
+                    const tagsList = value[ 1 ] ;
+                    const tags = [] ;
+                    if ( article.tags.length && tagsList.length ) {
+                        article.tags.map( tagValue => {
+                            tagsList.find( tag => {
+                                if ( tagValue === tag.value ) {
+                                    tags.push( tag ) ;
+                                    return true ;
+                                }
+                            } )
+                        } )
+                    }
+                    article.tags = tags ;
+                    this.articleData = article ;
+                } )
+                .catch( err => console.log( err ) ) ;
         }
     }
 </script>
@@ -252,7 +366,18 @@
     margin-bottom: 20px;
 }
 .content {
-    font-size: 16px;
+    font-size: 13px;
+    line-height: 30px;
+}
+.content ul li {
+    display: block;
+    list-style-type: disc!important;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 40px;
+}
+.content > ul > li {
+    -webkit-padding-start: 0px;
 }
 .actions {
     padding-left: 10px;
@@ -283,6 +408,7 @@
 }
 .comments > h4 {
     font-weight: bold;
+    padding-bottom: 5px;
     line-height: 20px;
     border-bottom: 1px solid #ccc;
 }
@@ -309,5 +435,24 @@
 .related-articles > ul li a {
     font-size: 14px;
     color: blue;
+}
+.tag {
+    display: inline-block;
+    padding: 0 5px;
+    height: 20px;
+    line-height: 19px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.no-comments{
+    width: 100%;
+    height: 60px;
+    color: #999;
+    text-align: center;
+    line-height: 60px;
+    border: 1px solid #ccc;
+    border-top: none;
 }
 </style>

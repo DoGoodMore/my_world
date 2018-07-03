@@ -2,7 +2,7 @@
     <el-col :span="6">
         <el-card class="box-card" shadow="hover">
             <div>站点公告</div>
-            <p class="overView">个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中个人网站正在建设中。。。</p>
+            <p class="overView post">{{filePost}}</p>
         </el-card>
 
         <!--热门标签-->
@@ -14,8 +14,7 @@
                :key="item.value"
                v-for="item in tagsHot">
                 <span class="tag"
-                      :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span>
-            </a>
+                      :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span></a>
         </el-card>
 
         <!--热门发布-->
@@ -38,34 +37,16 @@
 
 <script>
     import { getHotTags } from "@/api/tags" ;
+    import { getHotArticles } from "@/api/article" ;
+    import { getFileInfo } from '@/api/common' ;
 
     export default {
         name: "right-show",
         data() {
             return {
                 tagsHot: [],
-                hotArticle: [
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '快速搭建基于二进制日志文件的 mysql 复制',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '使用 redis 和 spring-session 实现 tomcat、glassfish 等 web 服务器集群 session 共享',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    }
-                ]
+                hotArticle: [],
+                filePost: ''
             }
         },
         methods: {
@@ -94,10 +75,28 @@
                         this.tagsHot = data ;
                     }
                 } )
+            },
+            getHotArticles() {
+                getHotArticles( {} ).then( res => {
+                    const { status, data } = res ;
+                    if ( status === 0 ) {
+                        this.hotArticle = data ;
+                    }
+                } )
+            },
+            getFileInfo() {
+                getFileInfo( {} ).then( res => {
+                    const { status, data } = res ;
+                    if ( status === 0 ) {
+                        this.filePost = data.post ;
+                    }
+                } )
             }
         },
         created() {
+            this.getFileInfo() ;
             this.getHotTags() ;
+            this.getHotArticles() ;
         }
     }
 </script>
@@ -116,5 +115,12 @@
 .margin-top-tag {
     margin-top: 10px;
     margin-right: 10px;
+}
+.post {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #999;
+    min-height: 80px;
+    line-height: 20px;
 }
 </style>

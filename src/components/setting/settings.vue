@@ -17,9 +17,13 @@
                     <article-manager></article-manager>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="定时任务补偿"
+            <el-tab-pane label="公告与置顶"
                          :lazy="true"
-                         name="fourth">定时任务补偿</el-tab-pane>
+                         name="fourth">
+                <div class="setting-min-height">
+                    <post-and-topping></post-and-topping>
+                </div>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -27,9 +31,10 @@
 <script>
     import tagManager from './components/tag-manager' ;
     import articleManager from './components/article-manager' ;
+    import postAndTopping from './components/post-and-topping' ;
     export default {
         name: "settings",
-        components: { tagManager, articleManager },
+        components: { tagManager, articleManager, postAndTopping },
         data() {
             return {
                 activeName: 'tag-manager'

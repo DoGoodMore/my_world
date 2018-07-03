@@ -35,3 +35,47 @@ export function getArticleListPage(data) {
         data
     } )
 }
+/**
+ *  删除对应文章接口
+ * @param data
+ */
+export function delArticle(data) {
+    return request( {
+        url: proxy + '/article/delArticle',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  更新文章是否为热门
+ * @param data
+ */
+export function updateArticleHot(data) {
+    return request( {
+        url: proxy + '/article/updateArticleHot',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  获取所有热门文章
+ * @param data
+ */
+export function getHotArticles(data) {
+    return request( {
+        url: proxy + '/article/getHotArticles',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  获取文章详情
+ * @param data
+ */
+export function getArticleDetail(data) {
+    return request( {
+        url: proxy + '/article/getArticleDetail',
+        method: 'POST',
+        data
+    } )
+}

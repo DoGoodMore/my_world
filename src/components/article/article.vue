@@ -16,6 +16,7 @@
                          style="margin-top: 10px;"
                          shadow="never">
                     博主置顶
+                    <p class="topping-box">{{topping}}</p>
                 </el-card>
 
                 <!--发布内容概览-->
@@ -33,22 +34,17 @@
                              style="margin-top: 20px;"
                              shadow="hover">
                         <div style="position: relative;"
-                             @click="$router.push( '/home/article-detail' )"
+                             @click="$router.push( `/home/article-detail?id=${item.id}` )"
                              class="clear-fix">
                             <div class="card-left">
                                 <div class="card-title">{{item.title}}</div>
-                                <!--<a href="javascript:;"
-                                   style="display: inline-block;"
+                                <a href="javascript:;"
+                                   style="display: inline-block;margin-right: 8px;"
                                    :key="itemInner.value"
                                    v-for="itemInner in item.tags">
                                         <span class="tag"
                                               :style="{ background: changeColorToRgb( itemInner.background, .2 ), color: itemInner.color, borderColor: changeColorToRgb( itemInner.color, .1 ) }">{{itemInner.label}}</span>
-                                                        </a>-->
-                                <el-tag v-for="( itemInner, indexInner ) in item.tags"
-                                        style="margin-right: 5px;"
-                                        size="mini"
-                                        :key="indexInner"
-                                        :type="itemInner.type">{{itemInner.text}}</el-tag>
+                                                        </a>
                                 <p style="margin-top: 10px;line-height: 20px;">{{item.content}}</p>
                                 <div :style="item.imgUrl ? { position: 'absolute', bottom: '0', left: '0' } : { marginTop: '20px' }"
                                      class="card-data-info">
@@ -87,90 +83,16 @@
     import imgTest2 from '../../static/img/img-test-2.jpg' ;
     import rightShow from '../home/components/right-show' ;
     import { getArticleListPage } from "@/api/article";
+    import { getAllTags } from "@/api/tags" ;
+    import { getFileInfo } from '@/api/common' ;
 
     export default {
         components: { rightShow },
         data() {
             return {
+                topping: '',
                 imgArr: [ imgTest1, imgTest2, imgTest1, imgTest2 ],
-                cardDataArr: [
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: null,
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    }
-                ],
+                cardDataArr: [],
                 tagsHot: [
                     {
                         type: 'success',
@@ -242,6 +164,19 @@
             }
         },
         methods: {
+            changTime(time, day) {
+                if (!time) {
+                    return '暂无数据'
+                }
+                const testTime = new Date( time )
+                const year = testTime.getFullYear()
+                const month = testTime.getMonth() + 1
+                const date = testTime.getDate()
+                const hour = testTime.getHours()
+                const minutes = testTime.getMinutes()
+                const seconds = testTime.getSeconds()
+                return day ? `${year}年${month}月${date}日` : `${year}年${month}月${date}日-${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+            },
             changeColorToRgb(hex, op) {
                 let color = [], rgb = [];
                 hex = hex.replace(/#/,"");
@@ -261,17 +196,73 @@
                 return "rgba(" + rgb.join(",") + ", " + ( op ? op : 1 ) + ")";
             },
             getArticleListRecent() {
-                getArticleListPage( this.listQuery ).then( res => {
-                    console.log( res ) ;
+                return new Promise( ( (resolve, reject) => {
+                    getArticleListPage( this.listQuery ).then( res => {
+                        const { status, data } = res ;
+                        if ( status === 0 ) {
+                            resolve( data )
+                        } else {
+                            reject( new Error( `服务器错误` ) )
+                        }
+                    } )
+                        .catch( err => reject( err ) )
+                } ) )
+            },
+            getAllTagsList() {
+                return new Promise( ( (resolve, reject) => {
+                    getAllTags( {} )
+                        .then( res => {
+                            const { status } = res ;
+                            if ( status === 0 ) {
+                                resolve( res )
+                            } else {
+                                reject( new Error( `服务器错误` ) )
+                            }
+                        } )
+                        .catch( err => reject( err ) ) ;
+                } ) )
+            },
+            getFileInfo() {
+                getFileInfo( {} ).then( res => {
                     const { status, data } = res ;
-                    if ( status === 0 ) {
-                        //this.cardDataArr = data ;
-                    }
+                    if ( status === 0 ) this.topping = data[ 'topping' ] ;
                 } )
             }
         },
         created() {
-            this.getArticleListRecent() ;
+            this.getFileInfo() ;
+            Promise.all( [ this.getArticleListRecent(), this.getAllTagsList() ] )
+                .then( value => {
+                    const articleArr = value[ 0 ],
+                          tagsArr = value[ 1 ].data ;
+                    this.$set( this, 'cardDataArr', [] ) ;
+                    if ( articleArr.length && tagsArr.length ) {
+                        articleArr.map( ( item, index ) => {
+                            this.cardDataArr.push( {
+                                id: item._id,
+                                title: item.title,
+                                tags: [],
+                                content: item.description,
+                                imgUrl: item.poster,
+                                author: item.author || 'xyzzzzz',
+                                readCount: item[ 'views' ],
+                                comments: item.comments.length,
+                                releaseTime: this.changTime( item.create )
+                            } ) ;
+                            if ( item.tags && item.tags.length ) {
+                                item.tags.map( itemTagValue => {
+                                    tagsArr.find( itemTag => {
+                                        if ( itemTagValue === itemTag.value ) {
+                                            this.cardDataArr[ index ].tags.push( itemTag ) ;
+                                            return true
+                                        }
+                                    } )
+                                } )
+                            }
+                        } )
+                    }
+                } )
+                .catch( err => console.log( err ) ) ;
         }
     }
 </script>
@@ -312,5 +303,9 @@
     border-radius: 4px;
     box-sizing: border-box;
     white-space: nowrap;
+}
+.topping-box {
+    line-height: 20px;
+    margin-top: 15px;
 }
 </style>
