@@ -10,6 +10,13 @@
                     <tag-manager></tag-manager>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="文章分类"
+                         :lazy="true"
+                         name="article-type-manager">
+                <div class="setting-min-height">
+                    <article-type-manager></article-type-manager>
+                </div>
+            </el-tab-pane>
             <el-tab-pane label="文章管理"
                          :lazy="true"
                          name="third">
@@ -32,9 +39,10 @@
     import tagManager from './components/tag-manager' ;
     import articleManager from './components/article-manager' ;
     import postAndTopping from './components/post-and-topping' ;
+    import articleTypeManager from './components/article-type-manager' ;
     export default {
         name: "settings",
-        components: { tagManager, articleManager, postAndTopping },
+        components: { tagManager, articleManager, postAndTopping, articleTypeManager },
         data() {
             return {
                 activeName: 'tag-manager'

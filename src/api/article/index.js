@@ -25,6 +25,17 @@ export function add(data) {
     } )
 }
 /**
+ *  更新文章内容
+ * @param data
+ */
+export function update(data) {
+    return request( {
+        url: proxy + '/article/update',
+        method: 'POST',
+        data
+    } )
+}
+/**
  *  获取最近的文章列表
  * @param data
  */
@@ -75,6 +86,28 @@ export function getHotArticles(data) {
 export function getArticleDetail(data) {
     return request( {
         url: proxy + '/article/getArticleDetail',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  获取相似文章列表
+ * @param data
+ */
+export function getLikeArticles(data) {
+    return request( {
+        url: proxy + '/article/getLikeArticles',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  根据ID获取某个文章
+ * @param data
+ */
+export function getArticleById(data) {
+    return request( {
+        url: proxy + '/article/getArticleById',
         method: 'POST',
         data
     } )

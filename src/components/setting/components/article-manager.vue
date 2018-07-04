@@ -29,9 +29,12 @@
             </el-table-column>
 
             <el-table-column align="center" label="操作"
-                             width="250"
+                             width="280"
                              class-name="small-padding fixed-width">
                 <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="success"
+                               @click="$router.push( `/home/edit-article?id=${scope.row._id}` )">编辑</el-button>
                     <el-button size="mini"
                                v-if="!scope.row.hot"
                                type="success"

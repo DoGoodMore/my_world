@@ -1,5 +1,10 @@
 <template>
     <div class="width">
+        <go-to-top transitionName="fade"
+                   :ref="`goTop`"
+                   :customStyle="myBackToTopStyle"
+                   :visibilityHeight="300"
+                   :backPosition="0"></go-to-top>
         <el-menu :default-active="`2`"
                  class="el-menu-demo"
                  mode="horizontal"
@@ -37,7 +42,7 @@
                     {{articleData ? articleData.title : '数据获取失败'}}
                 </div>
                 <div class="article-from">
-                    <div v-if="!articleData ? articleData.original : false"
+                    <div v-if="!articleData.original"
                          class="copyright-area">
                         原文出处：<a target="_blank"
                                 :href="articleData ? articleData.from.fromUrl : 'javascript:;'">{{articleData ? articleData.from.author : '数据获取失败'}}</a>
@@ -46,97 +51,6 @@
                          class="copyright-area">文章为博主原创内容 如有转载请注明出处</div>
                 </div>
                 <div class="editor-content content" v-html="articleData ? articleData.content : '数据获取失败'"></div>
-                <!--<div class="content" v-html="articleData ? articleData.content : '数据获取失败'">
-                    &lt;!&ndash;<ul>
-                        <li><strong>单页面（SPA）</strong>
-                            <ul>
-                                <li>优点：体验好，路由之间跳转流程，可定制转场动画，使用了懒加载可有效减少首页白屏时间，相较于多页面减少了用户访问静态资源服务器的次数等。</li>
-                                <li>缺点：初始会加载较大的静态资源，并且随着业务增长会越来越大，懒加载也有他的弊端，不做特殊处理不利于 SEO 等。</li>
-                            </ul>
-                        </li>
-                        <li><strong>多页面（MPA）</strong>：
-                            <ul>
-                                <li>优点：对搜索引擎友好，开发难度较低。</li>
-                                <li>缺点：资源请求较多，整页刷新体验较差，页面间传递数据只能依赖 URL，cookie，storage 等方式，较为局限。</li>
-                            </ul>
-                        </li>
-                        <li><strong>SPA + MPA</strong>
-                            <ul>
-                                <li>这种方式常见于较老 MPA 项目迁移至 SPA 的情况，缺点结合两者，两种主体通信方式也只能以兼容MPA 为准</li>
-                                <li>不过这种方式也有他的好处，假如你的 SPA 中，有类似文章分享这样（没有后端直出，后端返 HTML 串的情况下），想保证用户体验在 SPA 中开发一个页面，在 MPA 中也开发一个页面，去掉没用的依赖，或者直接用原生 JS 来开发，分享出去是 MPA 的文章页面，这样可以<strong>加快分享出去的打开速度，同时也能减少静态资源服务器的压力</strong>，因为如果分享出去的是 SPA 的文章页面，那 SPA 所需的静态资源至少都需要去进行协商请求,当然如果服务配置了强缓存就忽略以上所说。</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div v-hljs>
-                        <pre>
-                            <code>
-    &lt;html&gt;
-
-    &lt;head&gt;
-      &lt;script type=&quot;text/javascript&quot; src=&quot;loadxmldoc.js&quot;&gt;
-    &lt;/script&gt;
-    &lt;/head&gt;
-
-    &lt;body&gt;
-                                &lt;!&ndash; Crayon Syntax Highlighter v2.7.1.1 &ndash;&gt;
-      &lt;script type=&quot;text/javascript&quot;&gt;
-        xmlDoc = loadXMLDoc
-    (&quot;books.xml&quot;);
-        document.write(&quot;xmlDoc is loaded, ready for use&quot;);
-      &lt;/script&gt;
-
-    &lt;/body&gt;
-
-    &lt;/html&gt;
-                            </code>
-                        </pre>
-                    </div>
-                    <ul>
-                        <li><strong>单页面（SPA）</strong>
-                            <ul>
-                                <li>优点：体验好，路由之间跳转流程，可定制转场动画，使用了懒加载可有效减少首页白屏时间，相较于多页面减少了用户访问静态资源服务器的次数等。</li>
-                                <li>缺点：初始会加载较大的静态资源，并且随着业务增长会越来越大，懒加载也有他的弊端，不做特殊处理不利于 SEO 等。</li>
-                            </ul>
-                        </li>
-                        <li><strong>多页面（MPA）</strong>：
-                            <ul>
-                                <li>优点：对搜索引擎友好，开发难度较低。</li>
-                                <li>缺点：资源请求较多，整页刷新体验较差，页面间传递数据只能依赖 URL，cookie，storage 等方式，较为局限。</li>
-                            </ul>
-                        </li>
-                        <li><strong>SPA + MPA</strong>
-                            <ul>
-                                <li>这种方式常见于较老 MPA 项目迁移至 SPA 的情况，缺点结合两者，两种主体通信方式也只能以兼容MPA 为准</li>
-                                <li>不过这种方式也有他的好处，假如你的 SPA 中，有类似文章分享这样（没有后端直出，后端返 HTML 串的情况下），想保证用户体验在 SPA 中开发一个页面，在 MPA 中也开发一个页面，去掉没用的依赖，或者直接用原生 JS 来开发，分享出去是 MPA 的文章页面，这样可以<strong>加快分享出去的打开速度，同时也能减少静态资源服务器的压力</strong>，因为如果分享出去的是 SPA 的文章页面，那 SPA 所需的静态资源至少都需要去进行协商请求,当然如果服务配置了强缓存就忽略以上所说。</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div class="img">
-                        <img
-                            src="https://images2015.cnblogs.com/blog/643024/201611/643024-20161117105822107-1011418356.png"
-                            alt="img">
-                    </div>
-                    <ul>
-                        <li><strong>单页面（SPA）</strong>
-                            <ul>
-                                <li>优点：体验好，路由之间跳转流程，可定制转场动画，使用了懒加载可有效减少首页白屏时间，相较于多页面减少了用户访问静态资源服务器的次数等。</li>
-                                <li>缺点：初始会加载较大的静态资源，并且随着业务增长会越来越大，懒加载也有他的弊端，不做特殊处理不利于 SEO 等。</li>
-                            </ul>
-                        </li>
-                        <li><strong>多页面（MPA）</strong>：
-                            <ul>
-                                <li>优点：对搜索引擎友好，开发难度较低。</li>
-                                <li>缺点：资源请求较多，整页刷新体验较差，页面间传递数据只能依赖 URL，cookie，storage 等方式，较为局限。</li>
-                            </ul>
-                        </li>
-                        <li><strong>SPA + MPA</strong>
-                            <ul>
-                                <li>这种方式常见于较老 MPA 项目迁移至 SPA 的情况，缺点结合两者，两种主体通信方式也只能以兼容MPA 为准</li>
-                                <li>不过这种方式也有他的好处，假如你的 SPA 中，有类似文章分享这样（没有后端直出，后端返 HTML 串的情况下），想保证用户体验在 SPA 中开发一个页面，在 MPA 中也开发一个页面，去掉没用的依赖，或者直接用原生 JS 来开发，分享出去是 MPA 的文章页面，这样可以<strong>加快分享出去的打开速度，同时也能减少静态资源服务器的压力</strong>，因为如果分享出去的是 SPA 的文章页面，那 SPA 所需的静态资源至少都需要去进行协商请求,当然如果服务配置了强缓存就忽略以上所说。</li>
-                            </ul>
-                        </li>
-                    </ul>&ndash;&gt;
-                </div>-->
                 <div style="margin-top: 30px;" class="bottom">
                     <div class="tips">
                         <span style="margin-right: 10px;">标签:</span>
@@ -146,11 +60,6 @@
                            style="display: inline-block;margin-right: 10px;">
                             <span class="tag"
                                   :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span></a>
-                        <!--<el-tag v-for="( item, index ) in tagsArr"
-                                :key="index"
-                                size="mini"
-                                :type="item.type"
-                                style="margin-right: 10px;">{{item.text}}</el-tag>-->
                     </div>
                     <div class="actions">
                         <a href="javascript:;"><i class="icon-good"></i>{{articleData[ `good` ]}}</a>
@@ -160,11 +69,17 @@
                     <div class="pre-or-next">
                         <div class="pre">
                             <i class="icon-pre"></i>上一篇:
-                            <a href="javascript:;">Atom编辑器的插件</a>
+                            <a v-if="preArticle"
+                               @click="articleChange(preArticle._id)"
+                               href="javascript:;">{{preArticle.title}}</a>
+                            <span v-else style="margin-left: 10px;">已经是第一篇啦</span>
                         </div>
                         <div class="next">
                             <i class="icon-next"></i>下一篇:
-                            <a href="javascript:;">sublime text3好用的插件</a>
+                            <a v-if="nextArticle"
+                               @click="articleChange(nextArticle._id)"
+                               href="javascript:;">{{nextArticle.title}}</a>
+                            <span v-else style="margin-left: 10px;">已经是最后一篇啦</span>
                         </div>
                     </div>
                     <div class="comments">
@@ -188,23 +103,19 @@
                     </div>
                     <div class="related-articles">
                         <h4>相关文章</h4>
-                        <ul>
-                            <li>
-                                <a href="javascript:;">手把手教你 vue-cli 单页到多页应用</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">使用 Web3 和 Vue.js 来创建你的第一个以太坊 dAPP（二）</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">使用 Web3 和 Vue.js 来创建你的第一个以太坊 dAPP（一）</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">vue 生命周期深入</a>
+                        <ul v-if="likeArticles.length">
+                            <li v-for="item in likeArticles"
+                                :key="item._id">
+                                <a @click="$router.push( `/home/article-detail?id=${item._id}` )"
+                                   href="javascript:;">{{item.title}}</a>
                             </li>
                         </ul>
+                        <div class="no-like-data"
+                             v-else>
+                            暂无其他相似文章
+                        </div>
                     </div>
                 </div>
-
             </el-col>
             <right-show></right-show>
         </el-row>
@@ -213,10 +124,11 @@
 
 <script>
     import rightShow from '../home/components/right-show' ;
-    import { getArticleDetail } from '@/api/article' ;
+    import { getArticleDetail, getLikeArticles } from '@/api/article' ;
     import { getAllTags } from '@/api/tags' ;
+    import goToTop from '../components/go-to-top' ;
     export default {
-        components : { rightShow },
+        components : { rightShow, goToTop },
         name: "article-detail",
         data() {
             return {
@@ -252,10 +164,28 @@
                     views: '',
                     __v: '',
                     _id: '',
-                }
+                },
+                preArticle: null,
+                nextArticle: null,
+                likeArticles: [],
+                myBackToTopStyle: {
+                    right: '50px',
+                    bottom: '50px',
+                    width: '40px',
+                    height: '40px',
+                    'border-radius': '4px',
+                    'line-height': '45px', // 请保持与高度一致以垂直居中 Please keep consistent with height to center vertically
+                    background: '#e7eaf1'// 按钮的背景颜色 The background color of the button
+                },
+                loading: null
             }
         },
         methods: {
+            articleChange(id) {
+                this.$router.push( `/home/article-detail?id=${id}` ) ;
+                this.$refs[ 'goTop' ].backToTop() ;
+                this.getData() ;
+            },
             changeColorToRgb(hex, op) {
                 let color = [], rgb = [];
                 hex = hex.replace(/#/,"");
@@ -293,8 +223,10 @@
             getArticleDetail() {
                 return new Promise( ( resolve, reject ) => {
                     getArticleDetail( { id: this.articleId } ).then( res => {
-                        const { status, data } = res ;
+                        const { status, data, pre, next } = res ;
                         if ( status === 0 ) {
+                            this.preArticle = pre ;
+                            this.nextArticle = next ;
                             resolve( data )
                         } else {
                             resolve( [] )
@@ -315,36 +247,60 @@
                         } )
                         .catch( err => reject( err ) )
                 } )
+            },
+            getLikeArticles() {
+                const tags = [] ;
+                if ( this.articleData.tags && this.articleData.tags.length ) {
+                    this.articleData.tags.map( item => {
+                        tags.push( item.value ) ;
+                    } )
+                }
+                return getLikeArticles( { tags, id: this.articleData._id } ).then( res => {
+                    const { status, data } = res ;
+                    if ( status === 0 ) {
+                        this.likeArticles = data ;
+                    }
+                } )
+            },
+            getData() {
+                this.loading = this.$loading( {
+                    lock: true,
+                    text: '加载中...',
+                    background: 'rgba(0, 0, 0, .9)'
+                } ) ;
+                this.articleId = this.$route.query[ `id` ] ;
+                if ( !this.articleId ) {
+                    this.$message( {
+                        message: '获取文章信息失败',
+                        type: 'error'
+                    } ) ;
+                    this.$router.push( '/home/article' ) ;
+                }
+                Promise.all( [ this.getArticleDetail(), this.getTagList() ] )
+                    .then( value => {
+                        const article = value[ 0 ] ;
+                        const tagsList = value[ 1 ] ;
+                        const tags = [] ;
+                        if ( article.tags.length && tagsList.length ) {
+                            article.tags.map( tagValue => {
+                                tagsList.find( tag => {
+                                    if ( tagValue === tag.value ) {
+                                        tags.push( tag ) ;
+                                        return true ;
+                                    }
+                                } )
+                            } )
+                        }
+                        article.tags = tags ;
+                        this.articleData = article ;
+                    } )
+                    .catch( err => console.log( err ) )
+                    .then( () => this.getLikeArticles() )
+                    .then( () => this.loading.close() ) ;
             }
         },
         created() {
-            this.articleId = this.$route.query[ `id` ] ;
-            if ( !this.articleId ) {
-                this.$message( {
-                    message: '获取文章信息失败',
-                    type: 'error'
-                } ) ;
-                this.$router.push( '/home/article' ) ;
-            }
-            Promise.all( [ this.getArticleDetail(), this.getTagList() ] )
-                .then( value => {
-                    const article = value[ 0 ] ;
-                    const tagsList = value[ 1 ] ;
-                    const tags = [] ;
-                    if ( article.tags.length && tagsList.length ) {
-                        article.tags.map( tagValue => {
-                            tagsList.find( tag => {
-                                if ( tagValue === tag.value ) {
-                                    tags.push( tag ) ;
-                                    return true ;
-                                }
-                            } )
-                        } )
-                    }
-                    article.tags = tags ;
-                    this.articleData = article ;
-                } )
-                .catch( err => console.log( err ) ) ;
+            this.getData() ;
         }
     }
 </script>
@@ -454,5 +410,13 @@
     line-height: 60px;
     border: 1px solid #ccc;
     border-top: none;
+}
+.no-like-data {
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    color: #999;
+    border: 1px solid #ccc;
 }
 </style>

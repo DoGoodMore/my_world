@@ -59,6 +59,10 @@ Vue.use( Input ) ;
 Vue.use( Button ) ;
 Vue.use( Progress ) ;
 
+Vue.use( Loading.directive ) ;
+
+Vue.prototype.$loading = Loading.service;
+
 
 new Vue( {
   components : { App },
