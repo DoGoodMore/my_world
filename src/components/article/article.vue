@@ -93,70 +93,8 @@
                 topping: '',
                 imgArr: [ imgTest1, imgTest2, imgTest1, imgTest2 ],
                 cardDataArr: [],
-                tagsHot: [
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    },
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'warning',
-                        text: 'CSS3'
-                    },
-                    {
-                        type: 'info',
-                        text: 'H5'
-                    }
-                ],
-                hotArticle: [
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '快速搭建基于二进制日志文件的 mysql 复制',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '使用 redis 和 spring-session 实现 tomcat、glassfish 等 web 服务器集群 session 共享',
-                        type: 'JAVA'
-                    },
-                    {
-                        title: '排序算法之冒泡排序 － java实现',
-                        type: 'JAVA'
-                    }
-                ],
+                tagsHot: [],
+                hotArticle: [],
                 listQuery: {
                     pageNum: 1,
                     pageSize: 5
@@ -168,13 +106,13 @@
                 if (!time) {
                     return '暂无数据'
                 }
-                const testTime = new Date( time )
-                const year = testTime.getFullYear()
-                const month = testTime.getMonth() + 1
-                const date = testTime.getDate()
-                const hour = testTime.getHours()
-                const minutes = testTime.getMinutes()
-                const seconds = testTime.getSeconds()
+                const testTime = new Date( time ) ;
+                const year = testTime.getFullYear() ;
+                const month = testTime.getMonth() + 1 ;
+                const date = testTime.getDate() ;
+                const hour = testTime.getHours() ;
+                const minutes = testTime.getMinutes() ;
+                const seconds = testTime.getSeconds() ;
                 return day ? `${year}年${month}月${date}日` : `${year}年${month}月${date}日-${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
             },
             changeColorToRgb(hex, op) {

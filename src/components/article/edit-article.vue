@@ -7,6 +7,14 @@
                  label-width="100px"
                  :rules="rules"
                  :model="form">
+            <el-form-item label="类别" prop="type">
+                <el-cascader expand-trigger="hover"
+                             :options="typeList"
+                             :props="typeProps"
+                             v-model="form.articleType"
+                             @change="handleChangeType">
+                </el-cascader>
+            </el-form-item>
             <el-form-item label="标题" prop="title">
                 <el-input v-model="form.title"
                           placeholder="请输入文章标题"></el-input>
@@ -85,11 +93,19 @@
     import Tinymce from '@/components/Tinymce'
     import { update, getArticleById } from '@/api/article' ;
     import { getAllTags } from "@/api/tags" ;
+    import { getAllTypeList } from '@/api/type' ;
     export default {
         name: 'tinymce-demo',
         components: { Tinymce },
         data() {
             return {
+                typeProps: {
+                    children: 'children',
+                    label: 'typeName',
+                    value: 'typePath',
+                    disabled: 'disabled'
+                },
+                typeList: [],
                 tagsList: [],
                 fileList: [],
                 dialogImageUrl: '',
@@ -105,7 +121,8 @@
                     from: {
                         author: ``,
                         fromUrl: ``
-                    }
+                    },
+                    articleType: []
                 },
                 rules: {
                     description: [
@@ -126,6 +143,45 @@
             }
         },
         methods: {
+            getAllTypeList() {
+                return getAllTypeList( {} ).then( res => {
+                    const { status, data } = res ;
+                    this.$set( this, 'typeList', [] ) ;
+                    if ( status === 0 ) {
+                        if ( data && data.length ) {
+                            data.map( item => {
+                                if ( item.upperType === 1 ) {
+                                    this.typeList.push( Object.assign( item, {
+                                        disabled: false,
+                                        children: []
+                                    } ) )
+                                }
+                            } ) ;
+                            if ( this.typeList.length ) {
+                                data.map( item => {
+                                    this.typeList.find( itemInner => {
+                                        if ( itemInner.value === item.upperType ) {
+                                            itemInner.children.push( item ) ;
+                                        }
+                                    } )
+                                } ) ;
+                                this.typeList.sort( (a, b) => {
+                                    return a.typeSort - b.typeSort ;
+                                } ) ;
+                                this.typeList.map( item => {
+                                    if ( !item.children.length ) {
+                                        item.disabled = true ;
+                                    }
+                                } )
+                            }
+                        }
+                    }
+                } )
+            },
+            handleChangeType(_, __) {
+                console.log( _, __ ) ;
+                console.log( this.form.articleType ) ;
+            },
             updateArticleSubmit() {
                 this.$refs[`form`].validate((valid) => {
                     if (valid) {
@@ -227,6 +283,15 @@
                             this.form.from.fromUrl = data.from.fromUrl ;
                             this.form.description = data.description ;
                             this.fileList = [ { name: 'poster', url: data.poster } ] ;
+                            this.typeList.find( item => {
+                                if ( item.children && item.children.length ) {
+                                    item.children.find( itemInner => {
+                                        if ( itemInner.typePath === data.type ) {
+                                            this.$set( this.form, 'articleType', [ item.typePath, itemInner.typePath ] ) ;
+                                        }
+                                    } )
+                                }
+                            } ) ;
                         }
                     } )
             }
@@ -242,6 +307,7 @@
             }
             this.getTagList() ;
             this.getArticle() ;
+            this.getAllTypeList() ;
         }
     }
 </script>

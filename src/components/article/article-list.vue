@@ -1,26 +1,22 @@
 <template>
     <div class="width">
-        <el-menu :default-active="`2`"
+        <el-menu :default-active="articlePath"
                  class="el-menu-demo"
                  mode="horizontal"
                  @select="handleSelect">
-            <el-menu-item index="1">首页</el-menu-item>
-            <el-menu-item index="2">所有文章</el-menu-item>
-            <el-submenu index="3">
-                <template slot="title">前端</template>
-                <el-menu-item index="2-1">Javascript</el-menu-item>
-                <el-menu-item index="2-2">HTML</el-menu-item>
-                <el-menu-item index="2-3">CSS</el-menu-item>
-            </el-submenu>
-            <el-submenu index="4">
-                <template slot="title">前端框架</template>
-                <el-menu-item index="4-1">Vue</el-menu-item>
-                <el-menu-item index="4-2">React</el-menu-item>
-                <el-menu-item index="4-3">Angular</el-menu-item>
-                <el-menu-item index="4-4">JQuery</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="5">Node</el-menu-item>
-            <el-menu-item index="6">Linux</el-menu-item>
+            <template v-for="type in typeList">
+                <el-submenu :key="type.value"
+                            v-if="type.children.length"
+                            :index="type.typePath">
+                    <template slot="title">{{type.typeName}}</template>
+                    <el-menu-item v-for="typeSub in type.children"
+                                  :key="typeSub.value"
+                                  :index="typeSub.typePath">{{typeSub.typeName}}</el-menu-item>
+                </el-submenu>
+                <el-menu-item v-else
+                              :key="type.value"
+                              :index="type.typePath">{{type.typeName}}</el-menu-item>
+            </template>
         </el-menu>
         <el-breadcrumb style="height: 50px;line-height: 50px;margin-top: 20px;background-color: rgb(240, 240, 240);"
                        separator=">">
@@ -94,6 +90,7 @@
 
 <script>
     import rightShow from '../home/components/right-show' ;
+    import { getAllTypeList } from '@/api/type' ;
     export default {
         components : { rightShow },
         name: "article-detail",
@@ -190,7 +187,9 @@
                         type: 'error',
                         text: 'Vue'
                     }
-                ]
+                ],
+                typeList: [],
+                articlePath: ''
             }
         },
         methods: {
@@ -199,7 +198,46 @@
             },
             createArticle() {
                 this.$router.push( '/home/add-article' )
+            },
+            getAllTypeList() {
+                return getAllTypeList( {} ).then( res => {
+                    const { status, data } = res ;
+                    this.$set( this, 'typeList', [] ) ;
+                    if ( status === 0 ) {
+                        if ( data && data.length ) {
+                            data.map( item => {
+                                if ( item.upperType === 1 ) {
+                                    this.typeList.push( Object.assign( item, {
+                                        children: []
+                                    } ) )
+                                }
+                            } ) ;
+                            if ( this.typeList.length ) {
+                                data.map( item => {
+                                    this.typeList.find( itemInner => {
+                                        if ( itemInner.value === item.upperType ) {
+                                            itemInner.children.push( item ) ;
+                                        }
+                                    } )
+                                } ) ;
+                                this.typeList.sort( (a, b) => {
+                                    return a.typeSort - b.typeSort ;
+                                } )
+                            }
+                        }
+                    }
+                } )
+            },
+            getDataList() {
+                this.articlePath = this.$route.query[ `path` ] ? this.$route.query[ `path` ]
+                    : this.typeList[ 0 ].children.length ? this.typeList[ 0 ].children[ 0 ].typePath
+                        :  this.typeList[ 0 ].typePath ;
             }
+        },
+        created() {
+            this.getAllTypeList().then( () => {
+                this.getDataList() ;
+            } ) ;
         }
     }
 </script>

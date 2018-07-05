@@ -20,7 +20,7 @@ import { Carousel, CarouselItem, Row, Col, Card, Tag, Breadcrumb, BreadcrumbItem
     Menu, Submenu, MenuItem, MenuItemGroup, Tooltip,  Form, FormItem,
     Input, Button, Progress, Tabs, TabPane, Dialog, Upload, Message,
     Select, Option, Radio, Table, TableColumn, Pagination, ColorPicker,
-    Loading, MessageBox, Transfer } from 'element-ui' ;
+    Loading, MessageBox, Transfer, Cascader } from 'element-ui' ;
 
 Vue.config.productionTip = false ;
 
@@ -58,6 +58,7 @@ Vue.use( FormItem ) ;
 Vue.use( Input ) ;
 Vue.use( Button ) ;
 Vue.use( Progress ) ;
+Vue.use( Cascader ) ;
 
 Vue.use( Loading.directive ) ;
 
