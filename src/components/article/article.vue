@@ -99,6 +99,7 @@
                     pageNum: 1,
                     pageSize: 5
                 },
+                loading: null
             }
         },
         methods: {
@@ -168,6 +169,11 @@
             }
         },
         created() {
+            this.loading = this.$loading( {
+                lock: true,
+                text: '加载中...',
+                background: 'rgba(0, 0, 0, .9)'
+            } ) ;
             this.getFileInfo() ;
             Promise.all( [ this.getArticleListRecent(), this.getAllTagsList() ] )
                 .then( value => {
@@ -199,6 +205,7 @@
                             }
                         } )
                     }
+                    this.loading.close() ;
                 } )
                 .catch( err => console.log( err ) ) ;
         }

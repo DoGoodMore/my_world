@@ -1,6 +1,7 @@
 <template>
     <div class="width">
-        <el-menu :default-active="articlePath"
+
+        <el-menu :default-active="listQuery.articlePath"
                  class="el-menu-demo"
                  mode="horizontal"
                  @select="handleSelect">
@@ -18,14 +19,13 @@
                               :index="type.typePath">{{type.typeName}}</el-menu-item>
             </template>
         </el-menu>
-        <el-breadcrumb style="height: 50px;line-height: 50px;margin-top: 20px;background-color: rgb(240, 240, 240);"
+        <el-breadcrumb style="height: 50px;line-height: 50px;padding-left: 20px;margin-top: 20px;background-color: rgb(240, 240, 240);"
                        separator=">">
-            <el-breadcrumb-item><router-link to="/home/article-list">所有文章</router-link> </el-breadcrumb-item>
-            <el-breadcrumb-item><a href="/">前端</a></el-breadcrumb-item>
-            <el-breadcrumb-item><a href="javascript:;">Javascript</a></el-breadcrumb-item>
-            <el-breadcrumb-item><a href="javascript:;">初识javascript</a></el-breadcrumb-item>
+            <el-breadcrumb-item v-for="item in breadcrumbData"
+                                :key="item._id">
+                {{item.typeName}}
+            </el-breadcrumb-item>
         </el-breadcrumb>
-
 
         <el-row style="margin-top: 20px;" :gutter="20">
             <el-col :span="18">
@@ -34,53 +34,61 @@
                          shadow="never">
                     <div slot="header"
                          class="clear-fix">
-                        <span>所有文章</span>
+                        <span class="article-type-title">{{breadcrumbData[breadcrumbData.length - 1] ? breadcrumbData[breadcrumbData.length - 1].typeName : ``}}</span>
                         <el-button type="primary"
                                    size="mini"
                                    @click="createArticle"
                                    class="create-article-btn">发表文章</el-button>
                     </div>
-                    <el-card class="box-card"
-                             v-for="( item, index ) in cardDataArr"
-                             :key="index"
-                             style="margin-top: 20px;"
-                             shadow="hover">
-                        <div style="position: relative;"
-                             @click="$router.push( '/home/article-detail' )"
-                             class="clear-fix">
-                            <div class="card-left">
-                                <div class="card-title">{{item.title}}</div>
-                                <el-tag v-for="( itemInner, indexInner ) in item.tags"
-                                        style="margin-right: 5px;"
-                                        size="mini"
-                                        :key="indexInner"
-                                        :type="itemInner.type">{{itemInner.text}}</el-tag>
-                                <p style="margin-top: 10px;line-height: 20px;">{{item.content}}</p>
-                                <div :style="item.imgUrl ? { position: 'absolute', bottom: '0', left: '0' } : { marginTop: '20px' }"
-                                     class="card-data-info">
-                                    <a href="javascript:;">
-                                        <i class="icon-author"></i>
-                                        {{item.author}}
+
+                    <div v-if="cardDataArr.length">
+                        <el-card class="box-card"
+                                 v-for="( item, index ) in cardDataArr"
+                                 :key="index"
+                                 style="margin-top: 20px;"
+                                 shadow="hover">
+                            <div style="position: relative;"
+                                 @click="$router.push( `/home/article-detail?id=${item.id}` )"
+                                 class="clear-fix">
+                                <div class="card-left">
+                                    <div class="card-title">{{item.title}}</div>
+                                    <a href="javascript:;"
+                                       style="display: inline-block;margin-right: 8px;"
+                                       :key="itemInner.value"
+                                       v-for="itemInner in item.tags">
+                                        <span class="tag"
+                                              :style="{ background: changeColorToRgb( itemInner.background, .2 ), color: itemInner.color, borderColor: changeColorToRgb( itemInner.color, .1 ) }">{{itemInner.label}}</span>
                                     </a>
-                                    <a href="javascript:;">
-                                        <i class="icon-views"></i>
-                                        {{item.readCount}}
-                                    </a>
-                                    <a href="javascript:;">
-                                        <i class="icon-coments"></i>
-                                        {{item.comments}}
-                                    </a>
-                                    <a href="javascript:;">
-                                        <i class="icon-date"></i>
-                                        {{item.releaseTime}}
-                                    </a>
+                                    <p style="margin-top: 10px;line-height: 20px;">{{item.content}}</p>
+                                    <div :style="item.imgUrl ? { position: 'absolute', bottom: '0', left: '0' } : { marginTop: '20px' }"
+                                         class="card-data-info">
+                                        <a href="javascript:;">
+                                            <i class="icon-author"></i>
+                                            {{item.author}}
+                                        </a>
+                                        <a href="javascript:;">
+                                            <i class="icon-views"></i>
+                                            {{item.readCount}}
+                                        </a>
+                                        <a href="javascript:;">
+                                            <i class="icon-coments"></i>
+                                            {{item.comments}}
+                                        </a>
+                                        <a href="javascript:;">
+                                            <i class="icon-date"></i>
+                                            {{item.releaseTime}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <img v-if="item.imgUrl" :src="item.imgUrl" alt="img">
                                 </div>
                             </div>
-                            <div class="card-right">
-                                <img v-if="item.imgUrl" :src="item.imgUrl" alt="img">
-                            </div>
-                        </div>
-                    </el-card>
+                        </el-card>
+                    </div>
+                    <div v-else class="no-article-data">
+                        <span>暂无数据</span>
+                    </div>
                 </el-card>
             </el-col>
             <right-show></right-show>
@@ -91,151 +99,205 @@
 <script>
     import rightShow from '../home/components/right-show' ;
     import { getAllTypeList } from '@/api/type' ;
+    import { getArticleListByType } from '@/api/article' ;
+    import { getAllTags } from '@/api/tags' ;
     export default {
         components : { rightShow },
         name: "article-detail",
         data() {
             return {
-                cardDataArr: [
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: null,
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    },
-                    {
-                        title: '使用 Nginx 实现 tomcat、glassfish 等 web 服务器负载均衡',
-                        tags: [
-                            {
-                                type: 'info',
-                                text: 'Nginx'
-                            },
-                            {
-                                type: 'success',
-                                text: 'Node'
-                            }
-                        ],
-                        content: '1.web服务器负载均衡简介web服务器负载均衡是指将多台可用单节点服务器组合成web服务器集群，然后通过负载均衡器将客户端请求均匀的转发到不同的单节点web服务器上，从而增加整个web服务器集群的吞吐量...',
-                        imgUrl: 'http://www.17sucai.com/preview/705993/2018-01-18/Blog_html/img/slider/Aj6bieY.jpg',
-                        author: 'xyzzzzz',
-                        readCount: 666,
-                        comments: 18,
-                        releaseTime: '2016-12-25'
-                    }
-                ],
-                tagsArr: [
-                    {
-                        type: 'info',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Vue'
-                    }
-                ],
+                cardDataArr: [],
+                tagsArr: [],
                 typeList: [],
-                articlePath: ''
+                breadcrumbData: [],
+                listQuery: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    articlePath: '',
+                },
+                loading: null
             }
         },
         methods: {
-            handleSelect(_, __) {
-                console.log( _, __ )
+            changTime(time, day) {
+                if (!time) {
+                    return '暂无数据'
+                }
+                const testTime = new Date( time ) ;
+                const year = testTime.getFullYear() ;
+                const month = testTime.getMonth() + 1 ;
+                const date = testTime.getDate() ;
+                const hour = testTime.getHours() ;
+                const minutes = testTime.getMinutes() ;
+                const seconds = testTime.getSeconds() ;
+                return day ? `${year}年${month}月${date}日` : `${year}年${month}月${date}日-${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+            },
+            handleSelect(_) {
+                if ( _ === this.listQuery.articlePath ) return ;
+                this.$router.push( `/home/article-list?path=${ _ }` ) ;
+                this.getDataList() ;
             },
             createArticle() {
                 this.$router.push( '/home/add-article' )
             },
             getAllTypeList() {
-                return getAllTypeList( {} ).then( res => {
-                    const { status, data } = res ;
-                    this.$set( this, 'typeList', [] ) ;
-                    if ( status === 0 ) {
-                        if ( data && data.length ) {
-                            data.map( item => {
-                                if ( item.upperType === 1 ) {
-                                    this.typeList.push( Object.assign( item, {
-                                        children: []
-                                    } ) )
-                                }
-                            } ) ;
-                            if ( this.typeList.length ) {
+                return new Promise( ( resolve, reject ) => {
+                    getAllTypeList( {} ).then( res => {
+                        const { status, data } = res ;
+                        this.$set( this, 'typeList', [] ) ;
+                        if ( status === 0 ) {
+                            if ( data && data.length ) {
                                 data.map( item => {
-                                    this.typeList.find( itemInner => {
-                                        if ( itemInner.value === item.upperType ) {
-                                            itemInner.children.push( item ) ;
-                                        }
-                                    } )
+                                    if ( item.upperType === 1 ) {
+                                        this.typeList.push( Object.assign( item, {
+                                            children: []
+                                        } ) )
+                                    }
                                 } ) ;
-                                this.typeList.sort( (a, b) => {
-                                    return a.typeSort - b.typeSort ;
-                                } )
+                                if ( this.typeList.length ) {
+                                    data.map( item => {
+                                        this.typeList.find( itemInner => {
+                                            if ( itemInner.value === item.upperType ) {
+                                                itemInner.children.push( item ) ;
+                                            }
+                                        } )
+                                    } ) ;
+                                    this.typeList.sort( (a, b) => {
+                                        return a.typeSort - b.typeSort ;
+                                    } )
+                                }
+                                resolve() ;
                             }
                         }
-                    }
+                    } ).catch( err => reject( err ) ) ;
                 } )
             },
+            getAllTagsList() {
+                return new Promise( ( (resolve, reject) => {
+                    getAllTags( {} )
+                        .then( res => {
+                            const { status, data } = res ;
+                            if ( status === 0 ) {
+                                this.tagsArr = data ;
+                                resolve()
+                            } else {
+                                reject( new Error( `服务器错误` ) )
+                            }
+                        } )
+                        .catch( err => reject( err ) ) ;
+                } ) )
+            },
+            changeColorToRgb(hex, op) {
+                let color = [], rgb = [];
+                hex = hex.replace(/#/,"");
+
+                if (hex.length === 3) { // 处理 "#abc" 成 "#aabbcc"
+                    let tmp = [];
+                    for (let i = 0; i < 3; i++) {
+                        tmp.push(hex.charAt(i) + hex.charAt(i));
+                    }
+                    hex = tmp.join("");
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    color[i] = "0x" + hex.substr(i * 2, 2);
+                    rgb.push(parseInt( Number( color[ i ] )) );
+                }
+                return "rgba(" + rgb.join(",") + ", " + ( op ? op : 1 ) + ")";
+            },
             getDataList() {
-                this.articlePath = this.$route.query[ `path` ] ? this.$route.query[ `path` ]
+                this.loading = this.$loading( {
+                    lock: true,
+                    text: '加载中...',
+                    background: 'rgba(0, 0, 0, .9)'
+                } ) ;
+                this.listQuery.articlePath = this.$route.query[ `path` ] ? this.$route.query[ `path` ]
                     : this.typeList[ 0 ].children.length ? this.typeList[ 0 ].children[ 0 ].typePath
                         :  this.typeList[ 0 ].typePath ;
+                if ( this.typeList && this.typeList.length ) {
+                    this.$set( this, `breadcrumbData`, [] ) ;
+                    if (
+                        !this.typeList.find( item => {
+                            if ( item.children && item.children.length ) {
+                                return item.children.find( itemInner => {
+                                    if ( itemInner.typePath === this.listQuery.articlePath ) {
+                                        this.breadcrumbData.push( item ) ;
+                                        this.breadcrumbData.push( itemInner ) ;
+                                        return true
+                                    }
+                                } )
+                            } else {
+                                if ( item.typePath === this.listQuery.articlePath ) {
+                                    this.breadcrumbData.push( item ) ;
+                                    return true
+                                }
+                            }
+                        } )
+                    ) {
+                        if (  this.typeList[ 0 ].children && this.typeList[ 0 ].children.length  ) {
+                            this.breadcrumbData.push( this.typeList[ 0 ] ) ;
+                            this.breadcrumbData.push( this.typeList[ 0 ].children[ 0 ] ) ;
+                            this.listQuery.articlePath = this.typeList[ 0 ].children[ 0 ].typePath ;
+                        } else {
+                            this.breadcrumbData.push( this.typeList[ 0 ] ) ;
+                            this.listQuery.articlePath = this.typeList[ 0 ].typePath ;
+                        }
+                        this.$message( {
+                            message: `对不起,没有找到对应的文章类型`,
+                            type: 'error'
+                        } ) ;
+                    }
+                } else {
+                    this.$message( {
+                        message: `请联系博主添加文章类型`,
+                        type: 'error'
+                    } ) ;
+                    this.$router.push( '/home/index' ) ;
+                    return
+                }
+                getArticleListByType( this.listQuery )
+                    .then( res => {
+                        this.$set( this, 'cardDataArr', [] ) ;
+                        const { status, data } = res ;
+                        if ( status === 0 ) {
+                            if ( data && data.length ) {
+                                data.map( ( item, index ) => {
+                                    this.cardDataArr.push( {
+                                        id: item._id,
+                                        title: item.title,
+                                        tags: [],
+                                        content: item.description,
+                                        imgUrl: item.poster,
+                                        author: item.author || 'xyzzzzz',
+                                        readCount: item[ 'views' ],
+                                        comments: item.comments.length,
+                                        releaseTime: this.changTime( item.create )
+                                    } ) ;
+                                    if ( item.tags && item.tags.length ) {
+                                        item.tags.map( itemTagValue => {
+                                            this.tagsArr.find( itemTag => {
+                                                if ( itemTagValue === itemTag.value ) {
+                                                    this.cardDataArr[ index ].tags.push( itemTag ) ;
+                                                    return true
+                                                }
+                                            } )
+                                        } )
+                                    }
+                                } )
+                            }
+                            this.loading.close() ;
+                        }
+                    } )
+
             }
         },
         created() {
-            this.getAllTypeList().then( () => {
+            this.loading = this.$loading( {
+                lock: true,
+                text: '加载中...',
+                background: 'rgba(0, 0, 0, .9)'
+            } ) ;
+            Promise.all( [ this.getAllTypeList(), this.getAllTagsList() ] ).then( () => {
                 this.getDataList() ;
             } ) ;
         }
@@ -243,6 +305,27 @@
 </script>
 
 <style scoped>
+
+    /*文章列表没有数据时展示盒模型的样式*/
+    .no-article-data {
+        height: 200px;
+        border: 1px solid #ebeef5;
+        position: relative;
+    }
+    .no-article-data > span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        height: 20px;
+        width: auto;
+    }
+
+
+    .article-type-title {
+        font-size: 14px;
+        font-weight: bold;
+    }
     .article-title {
         font-size: 24px;
         line-height: 30px;
@@ -347,5 +430,15 @@
         float: right;
         background: linear-gradient(to right, #6EE4E7, #c0e3e7);
         border: none;
+    }
+    .tag {
+        display: inline-block;
+        padding: 0 5px;
+        height: 20px;
+        line-height: 19px;
+        font-size: 12px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        white-space: nowrap;
     }
 </style>

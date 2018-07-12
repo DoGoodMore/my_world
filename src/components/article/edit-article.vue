@@ -144,38 +144,41 @@
         },
         methods: {
             getAllTypeList() {
-                return getAllTypeList( {} ).then( res => {
-                    const { status, data } = res ;
-                    this.$set( this, 'typeList', [] ) ;
-                    if ( status === 0 ) {
-                        if ( data && data.length ) {
-                            data.map( item => {
-                                if ( item.upperType === 1 ) {
-                                    this.typeList.push( Object.assign( item, {
-                                        disabled: false,
-                                        children: []
-                                    } ) )
-                                }
-                            } ) ;
-                            if ( this.typeList.length ) {
+                return new Promise( ( resolve, reject ) => {
+                    getAllTypeList( {} ).then( res => {
+                        const { status, data } = res ;
+                        this.$set( this, 'typeList', [] ) ;
+                        if ( status === 0 ) {
+                            if ( data && data.length ) {
                                 data.map( item => {
-                                    this.typeList.find( itemInner => {
-                                        if ( itemInner.value === item.upperType ) {
-                                            itemInner.children.push( item ) ;
+                                    if ( item.upperType === 1 ) {
+                                        this.typeList.push( Object.assign( item, {
+                                            disabled: false,
+                                            children: []
+                                        } ) )
+                                    }
+                                } ) ;
+                                if ( this.typeList.length ) {
+                                    data.map( item => {
+                                        this.typeList.find( itemInner => {
+                                            if ( itemInner.value === item.upperType ) {
+                                                itemInner.children.push( item ) ;
+                                            }
+                                        } )
+                                    } ) ;
+                                    this.typeList.sort( (a, b) => {
+                                        return a.typeSort - b.typeSort ;
+                                    } ) ;
+                                    this.typeList.map( item => {
+                                        if ( !item.children.length ) {
+                                            item.disabled = true ;
                                         }
                                     } )
-                                } ) ;
-                                this.typeList.sort( (a, b) => {
-                                    return a.typeSort - b.typeSort ;
-                                } ) ;
-                                this.typeList.map( item => {
-                                    if ( !item.children.length ) {
-                                        item.disabled = true ;
-                                    }
-                                } )
+                                }
+                                resolve() ;
                             }
                         }
-                    }
+                    } ).catch( err => reject( err ) ) ;
                 } )
             },
             handleChangeType(_, __) {
@@ -262,38 +265,38 @@
                 })
             },
             getTagList() {
-                getAllTags( {} )
-                    .then( res => {
-                        const { status, data } = res ;
-                        if ( status === 0 ) {
-                            this.tagsList = data ;
-                        }
-                    } )
+                return new Promise( ( resolve, reject ) => {
+                    getAllTags( {} )
+                        .then( res => {
+                            const { status, data } = res ;
+                            if ( status === 0 ) {
+                                this.tagsList = data ;
+                                resolve() ;
+                            }
+                        } )
+                        .catch( err => reject( err ) ) ;
+                } )
+
             },
             getArticle() {
-                getArticleById( { id: this.articleId } )
-                    .then( res => {
-                        const { status, data } = res ;
-                        if ( status === 0 ) {
-                            this.form.title = data.title ;
-                            this.form.content = data.content ;
-                            this.form.tags = data.tags ;
-                            this.form.original = data.original ;
-                            this.form.from.author = data.from.author ;
-                            this.form.from.fromUrl = data.from.fromUrl ;
-                            this.form.description = data.description ;
-                            this.fileList = [ { name: 'poster', url: data.poster } ] ;
-                            this.typeList.find( item => {
-                                if ( item.children && item.children.length ) {
-                                    item.children.find( itemInner => {
-                                        if ( itemInner.typePath === data.type ) {
-                                            this.$set( this.form, 'articleType', [ item.typePath, itemInner.typePath ] ) ;
-                                        }
-                                    } )
-                                }
-                            } ) ;
-                        }
-                    } )
+                return new Promise( ( resolve, reject ) => {
+                    getArticleById( { id: this.articleId } )
+                        .then( res => {
+                            const { status, data } = res ;
+                            if ( status === 0 ) {
+                                this.form.title = data.title ;
+                                this.form.content = data.content ;
+                                this.form.tags = data.tags ;
+                                this.form.original = data.original ;
+                                this.form.from.author = data.from.author ;
+                                this.form.from.fromUrl = data.from.fromUrl ;
+                                this.form.description = data.description ;
+                                this.fileList = [ { name: 'poster', url: data.poster } ] ;
+                                resolve(data) ;
+                            }
+                        } )
+                        .catch( err => reject( err ) ) ;
+                } )
             }
         },
         created() {
@@ -305,9 +308,19 @@
                 } ) ;
                 this.$router.push( '/home/article' ) ;
             }
-            this.getTagList() ;
-            this.getArticle() ;
-            this.getAllTypeList() ;
+            Promise.all( [ this.getTagList(), this.getArticle(), this.getAllTypeList() ] )
+                .then( val => {
+                    const articleType = val[ 1 ].type ;
+                    this.typeList.find( item => {
+                        if ( item.children && item.children.length ) {
+                            item.children.find( itemInner => {
+                                if ( itemInner.typePath === articleType ) {
+                                    this.$set( this.form, 'articleType', [ item.typePath, itemInner.typePath ] ) ;
+                                }
+                            } )
+                        }
+                    } ) ;
+                } ) ;
         }
     }
 </script>

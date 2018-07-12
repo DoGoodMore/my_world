@@ -1,1 +1,1 @@
-export default "/proxy"
+export default process.env.NODE_ENV === 'development' ?  "/proxy" : "" ;

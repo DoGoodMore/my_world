@@ -5,34 +5,34 @@
                    :customStyle="myBackToTopStyle"
                    :visibilityHeight="300"
                    :backPosition="0"></go-to-top>
-        <el-menu :default-active="`2`"
+
+        <el-menu :default-active="articleData.type"
                  class="el-menu-demo"
                  mode="horizontal"
                  @select="handleSelect">
-            <el-menu-item index="1">首页</el-menu-item>
-            <el-menu-item index="2">所有文章</el-menu-item>
-            <el-submenu index="3">
-                <template slot="title">前端</template>
-                <el-menu-item index="2-1">Javascript</el-menu-item>
-                <el-menu-item index="2-2">HTML</el-menu-item>
-                <el-menu-item index="2-3">CSS</el-menu-item>
-            </el-submenu>
-            <el-submenu index="4">
-                <template slot="title">前端框架</template>
-                <el-menu-item index="4-1">Vue</el-menu-item>
-                <el-menu-item index="4-2">React</el-menu-item>
-                <el-menu-item index="4-3">Angular</el-menu-item>
-                <el-menu-item index="4-4">JQuery</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="5">Node</el-menu-item>
-            <el-menu-item index="6">Linux</el-menu-item>
+            <template v-for="type in typeList">
+                <el-submenu :key="type.value"
+                            v-if="type.children.length"
+                            :index="type.typePath">
+                    <template slot="title">{{type.typeName}}</template>
+                    <el-menu-item v-for="typeSub in type.children"
+                                  :key="typeSub.value"
+                                  :index="typeSub.typePath">{{typeSub.typeName}}</el-menu-item>
+                </el-submenu>
+                <el-menu-item v-else
+                              :key="type.value"
+                              :index="type.typePath">{{type.typeName}}</el-menu-item>
+            </template>
         </el-menu>
-        <el-breadcrumb style="height: 50px;line-height: 50px;margin-top: 20px;background-color: rgb(240, 240, 240);"
+        <el-breadcrumb style="height: 50px;line-height: 50px;padding-left: 20px;margin-top: 20px;background-color: rgb(240, 240, 240);"
                        separator=">">
-            <el-breadcrumb-item><router-link to="/home/article-list">所有文章</router-link> </el-breadcrumb-item>
-            <el-breadcrumb-item><a href="/">前端</a></el-breadcrumb-item>
-            <el-breadcrumb-item><a href="javascript:;">Javascript</a></el-breadcrumb-item>
-            <el-breadcrumb-item><a href="javascript:;">初识javascript</a></el-breadcrumb-item>
+            <el-breadcrumb-item v-for="item in breadcrumbData"
+                                :key="item._id">
+                <router-link :to="item.upperType === 1 ? `/home/article-detail?id=${articleData._id}` : `/home/article-list?path=${item.typePath}`">
+                    {{item.typeName}}
+                </router-link>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>{{articleData.title}}</el-breadcrumb-item>
         </el-breadcrumb>
 
 
@@ -117,7 +117,7 @@
                     </div>
                 </div>
             </el-col>
-            <right-show></right-show>
+            <right-show :get-hot-article="getHotArticle"></right-show>
         </el-row>
     </div>
 </template>
@@ -126,6 +126,7 @@
     import rightShow from '../home/components/right-show' ;
     import { getArticleDetail, getLikeArticles } from '@/api/article' ;
     import { getAllTags } from '@/api/tags' ;
+    import { getAllTypeList } from '@/api/type' ;
     import goToTop from '../components/go-to-top' ;
     export default {
         components : { rightShow, goToTop },
@@ -177,7 +178,9 @@
                     'line-height': '45px', // 请保持与高度一致以垂直居中 Please keep consistent with height to center vertically
                     background: '#e7eaf1'// 按钮的背景颜色 The background color of the button
                 },
-                loading: null
+                loading: null,
+                typeList: [],
+                breadcrumbData: []
             }
         },
         methods: {
@@ -217,8 +220,8 @@
                 const seconds = testTime.getSeconds() ;
                 return day ? `${year}年${month}月${date}日` : `${year}年${month}月${date}日-${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
             },
-            handleSelect(_, __) {
-                console.log( _, __ )
+            handleSelect( _ ) {
+                this.$router.push( `/home/article-list?path=${ _ }` ) ;
             },
             getArticleDetail() {
                 return new Promise( ( resolve, reject ) => {
@@ -246,6 +249,38 @@
                             }
                         } )
                         .catch( err => reject( err ) )
+                } )
+            },
+            getAllTypeList() {
+                return new Promise( ( resolve, reject ) => {
+                    getAllTypeList( {} ).then( res => {
+                        const { status, data } = res ;
+                        this.$set( this, 'typeList', [] ) ;
+                        if ( status === 0 ) {
+                            if ( data && data.length ) {
+                                data.map( item => {
+                                    if ( item.upperType === 1 ) {
+                                        this.typeList.push( Object.assign( item, {
+                                            children: []
+                                        } ) )
+                                    }
+                                } ) ;
+                                if ( this.typeList.length ) {
+                                    data.map( item => {
+                                        this.typeList.find( itemInner => {
+                                            if ( itemInner.value === item.upperType ) {
+                                                itemInner.children.push( item ) ;
+                                            }
+                                        } )
+                                    } ) ;
+                                    this.typeList.sort( (a, b) => {
+                                        return a.typeSort - b.typeSort ;
+                                    } )
+                                }
+                                resolve() ;
+                            }
+                        }
+                    } ).catch( err => reject( err ) ) ;
                 } )
             },
             getLikeArticles() {
@@ -276,7 +311,7 @@
                     } ) ;
                     this.$router.push( '/home/article' ) ;
                 }
-                Promise.all( [ this.getArticleDetail(), this.getTagList() ] )
+                Promise.all( [ this.getArticleDetail(), this.getTagList(), this.getAllTypeList() ] )
                     .then( value => {
                         const article = value[ 0 ] ;
                         const tagsList = value[ 1 ] ;
@@ -291,12 +326,35 @@
                                 } )
                             } )
                         }
+                        if ( this.typeList && this.typeList.length ) {
+                            this.$set( this, `breadcrumbData`, [] ) ;
+                            this.typeList.find( item => {
+                                if ( item.children && item.children.length ) {
+                                    return item.children.find( itemInner => {
+                                        if ( itemInner.typePath === article.type ) {
+                                            this.breadcrumbData.push( item ) ;
+                                            this.breadcrumbData.push( itemInner ) ;
+                                            return true
+                                        }
+                                    } )
+                                } else {
+                                    if ( item.typePath === article.type ) {
+                                        this.breadcrumbData.push( item ) ;
+                                        return true ;
+                                    }
+                                }
+                            } ) ;
+                        }
                         article.tags = tags ;
                         this.articleData = article ;
                     } )
                     .catch( err => console.log( err ) )
                     .then( () => this.getLikeArticles() )
                     .then( () => this.loading.close() ) ;
+            },
+            getHotArticle(id) {
+                this.$router.push( `/home/article-detail?id=${id}` ) ;
+                this.getData() ;
             }
         },
         created() {

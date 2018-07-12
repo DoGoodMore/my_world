@@ -112,3 +112,14 @@ export function getArticleById(data) {
         data
     } )
 }
+/**
+ *  根据类型获取文章列表
+ * @param data
+ */
+export function getArticleListByType(data) {
+    return request( {
+        url: proxy + '/article/getArticleListByType',
+        method: 'POST',
+        data
+    } )
+}

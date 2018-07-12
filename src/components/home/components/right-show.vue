@@ -23,7 +23,9 @@
             <div v-for="( item, index ) in hotArticle"
                  style="padding: 5px 0;line-height: 1.5;border-bottom: 1px solid #d8e6f8;"
                  :key="index">
-                <a style="font-size: 14px" href="javascript:;">{{item.title}}</a>
+                <a class="hot-article-item"
+                   @click="lookHotArticleDetail(item._id)"
+                   href="javascript:;">{{item.title}}</a>
             </div>
         </el-card>
 
@@ -42,6 +44,7 @@
 
     export default {
         name: "right-show",
+        props: [ 'getHotArticle' ],
         data() {
             return {
                 tagsHot: [],
@@ -80,6 +83,7 @@
                 getHotArticles( {} ).then( res => {
                     const { status, data } = res ;
                     if ( status === 0 ) {
+                        console.log( data ) ;
                         this.hotArticle = data ;
                     }
                 } )
@@ -91,6 +95,10 @@
                         this.filePost = data.post ;
                     }
                 } )
+            },
+            lookHotArticleDetail(id) {
+                this.getHotArticle ? this.getHotArticle( id )
+                    : this.$router.push( `/home/article-detail?id=${id}` ) ;
             }
         },
         created() {
@@ -102,6 +110,10 @@
 </script>
 
 <style scoped>
+.hot-article-item {
+    font-size: 13px;
+    padding-left: 5px;
+}
 .tag {
     display: inline-block;
     padding: 0 10px;
