@@ -38,6 +38,7 @@
                     :before-upload="beforeUpload"
                     :file-list="fileList"
                     :on-change="changeImgList"
+                    :before-remove="handleBeforeRemove"
                     action="http://172.16.28.97:3001/posts"
                     accept="image/*"
                     list-type="picture-card"
@@ -227,6 +228,10 @@
             handleRemove(file, fileList) {
                 console.log(file, fileList);
             },
+            handleBeforeRemove(  ) {
+                this.$set( this, `fileList`, [] ) ;
+                return false ;
+            },
             handlePictureCardPreview(file) {
                 this.dialogImageUrl = file.url ;
                 this.dialogVisible = true ;
@@ -235,7 +240,6 @@
                 this.$set( this, `fileList`, __ ) ;
             },
             beforeUpload() {
-                console.log( this.fileList.length ) ;
                 if ( this.fileList.length - 1 ) {
                     this.$message( {
                         message: '封面图片只能上传一张...',

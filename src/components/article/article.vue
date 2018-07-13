@@ -1,5 +1,5 @@
 <template>
-    <div class="width container">
+    <div class="width container" style="">
         <el-row :gutter="20">
             <!--技术文章跑马灯块-->
             <el-col :span="18">
@@ -214,7 +214,7 @@
 
 <style scoped>
 .container {
-    margin-top: 10px;
+    margin-top: 20px;
 }
     .card-left {
         float: left;

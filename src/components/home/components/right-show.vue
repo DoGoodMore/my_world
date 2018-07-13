@@ -83,7 +83,6 @@
                 getHotArticles( {} ).then( res => {
                     const { status, data } = res ;
                     if ( status === 0 ) {
-                        console.log( data ) ;
                         this.hotArticle = data ;
                     }
                 } )

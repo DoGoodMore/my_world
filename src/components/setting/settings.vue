@@ -19,14 +19,14 @@
             </el-tab-pane>
             <el-tab-pane label="文章管理"
                          :lazy="true"
-                         name="third">
+                         name="article-manager">
                 <div class="setting-min-height">
                     <article-manager></article-manager>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="公告与置顶"
                          :lazy="true"
-                         name="fourth">
+                         name="announcement-topping">
                 <div class="setting-min-height">
                     <post-and-topping></post-and-topping>
                 </div>
@@ -45,11 +45,12 @@
         components: { tagManager, articleManager, postAndTopping, articleTypeManager },
         data() {
             return {
-                activeName: 'tag-manager'
+                activeName: window.sessionStorage.getItem( 'tabActiveName' ) ? window.sessionStorage.getItem( 'tabActiveName' ) : 'tag-manager'
             }
         },
         methods: {
-            handleClick() {
+            handleClick( val ) {
+                window.sessionStorage.setItem( 'tabActiveName', val.name ) ;
             }
         }
     }

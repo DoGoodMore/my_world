@@ -1,6 +1,6 @@
 <template>
     <div class="width">
-        <el-card style="width: 100%;" class="box-card" shadow="hover">
+        <el-card style="width: 100%;margin-top: 20px;" class="box-card" shadow="hover">
             <h3 style="font-size: 16px">CONTACT ME</h3>
             <div class="contact-content">
                 <div class="contact-types">

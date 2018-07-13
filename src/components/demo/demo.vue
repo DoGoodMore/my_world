@@ -6,7 +6,8 @@
             <el-tab-pane label="实例三" name="third"></el-tab-pane>
             <el-tab-pane label="实例四" name="fourth"></el-tab-pane>
         </el-tabs>
-        <div class="content">
+        <div class="content"
+             :style="{ height: `1094px` }">
             <ul class="demo-list">
                 <li style="left: 100px;" class="demo-list-item">
                     <a href="javascript:;">
@@ -115,6 +116,8 @@
     position: relative;
 }
 .demo-list .demo-list-item {
+    width: 419px;
+    height: 294px;
     position: absolute;
 }
 .demo-item-content {

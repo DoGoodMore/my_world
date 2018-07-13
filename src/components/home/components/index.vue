@@ -64,7 +64,7 @@
         methods: {
             showAnimation(_, __) {
                 setTimeout(() => {
-                    this.nowIndex = _
+                    this.nowIndex = _ ;
                     if ( this.nowIndex === 2 ) {
                         this.$refs[`video`].play() ;
                     }
@@ -83,7 +83,7 @@
     left: 0;
 }
 .wrapper {
-    position: fixed;
+    position: fixed!important;
     width: 100%;
     height: 100%;
     top: 0;
