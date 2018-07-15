@@ -31,6 +31,7 @@
                     FELL FREE TO CONTACT ME THE CORE OF YOUR MARKETING
                 </div>
                 <el-form :label-position="`left`"
+                         :ref="`message`"
                          label-width="100px"
                          :rules="rules"
                          :model="form">
@@ -49,7 +50,7 @@
                                   v-model="form.content"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button class="send-message">
+                        <el-button @click="submitMessage" class="send-message">
                             提交
                         </el-button>
                     </el-form-item>
@@ -60,6 +61,8 @@
 </template>
 
 <script>
+    import { sendMessage } from "@/api/message";
+
     export default {
         name: "contact",
         data() {
@@ -80,6 +83,32 @@
                         { required: true, message: '请输入你的留言内容', trigger: 'blur' },
                     ]
                 }
+            }
+        },
+        methods: {
+            submitMessage() {
+                this.$refs[ `message` ].validate((valid) => {
+                    if ( valid ) {
+                        if ( !/^\w{3,}@\w*\.com$/.test( this.form.email ) ) {
+                            this.$message( {
+                                message: '请输入正确的电子邮箱地址',
+                                type: 'error'
+                            } ) ;
+                            return ;
+                        }
+                        sendMessage( this.form )
+                            .then( res => {
+                                const { status } = res ;
+                                if ( status === 0 ) {
+                                    this.$message( {
+                                        message: '提交成功',
+                                        type: 'success'
+                                    } )
+                                }
+                                this.$refs[ `message` ].resetFields() ;
+                            } )
+                    }
+                })
             }
         }
     }

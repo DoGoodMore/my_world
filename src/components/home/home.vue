@@ -3,7 +3,7 @@
         <!--快速入口的按钮-->
       <div class="fast-entry"
            v-show="fastEntryShow"
-           @click="showLoginBox">
+           @click="showLoginOrToolBox">
           快速入口
       </div>
         <!-- 登录弹窗盒模型 -->
@@ -40,13 +40,17 @@
         <!-- canvas原子运动效果 -->
       <div :ref="`home-container`" class="canvas-nest"></div>
         <!-- 快速选项 盒模型 -->
-      <div class="common-menu"
-           v-show="false">
+      <div class="common-menu" :style="{ transform: `translateX(${toolBoxTransform})` }">
           <h4>常用菜单</h4>
           <ul>
               <li>
                   <el-badge :value="12" class="item">
                       <a href="javascript:;">我的消息</a>
+                  </el-badge>
+              </li>
+              <li>
+                  <el-badge :value="99" class="item">
+                      <a href="javascript:;">评论管理</a>
                   </el-badge>
               </li>
               <li>
@@ -59,6 +63,13 @@
                   <a href="javascript:;">修改站点公告</a>
               </li>
           </ul>
+          <a class="close-tool-box-open"
+             @click="hideToolBox"
+             href="javascript:;">
+              <i :style="{ transform: `rotate(${ arrowRotate })` }"
+                 style="transition: transform .3s ease-in-out"
+                 class="el-icon-arrow-left"></i>
+          </a>
       </div>
         <!-- 主体内容区域 -->
       <div class="width" style="background-color: rgb(247, 247, 247);position: relative;z-index: 3;">
@@ -101,12 +112,19 @@
                 loginInBoxOut: false,
                 loginInBoxIn: false,
                 canvasNestInstance: null,
-                fastEntryShow: true
+                fastEntryShow: true,
+                // isLogin: !window.localStorage.getItem( 'isLogin' ),
+                toolBoxTransform: `-170px`,
+                arrowRotate: "0deg"
             }
         },
         created() {
         },
         methods: {
+            hideToolBox() {
+                this.toolBoxTransform = `-170px` ;
+                this.arrowRotate = "-180deg" ;
+            },
             loginByUsername() {
                 this.$refs[ `loginForm` ].validate((valid) => {
                     if ( valid ) {
@@ -114,27 +132,44 @@
                     }
                 })
             },
-            showLoginBox() {
-                this.fastEntryShow = false ;
-                this.loginInBoxIn = true ;
-                this.loginInBoxOut = false ;
-                setTimeout( () => {
-                    this.loginInBoxIsShow = true ;
-                }, 300 )
+            showLoginOrToolBox() {
+                if ( !this.isLogin ) {
+                    this.fastEntryShow = false ;
+                    this.loginInBoxIn = true ;
+                    this.loginInBoxOut = false ;
+                    setTimeout( () => {
+                        this.loginInBoxIsShow = true ;
+                    }, 300 )
+                } else {
+                    this.toolBoxTransform = `0px` ;
+                    this.arrowRotate = "0deg" ;
+                }
             },
             hideLoginBox() {
-                this.loginInBoxIn = false ;
-                this.loginInBoxOut = true ;
-                setTimeout( () => {
-                    this.loginInBoxIsShow = false ;
-                    this.fastEntryShow = true ;
-                    this.$nextTick( () => {
-                        this.$refs[ `loginForm` ].resetFields() ;
-                    } )
-                }, 300 )
+                if ( !this.isLogin ) {
+                    this.loginInBoxIn = false ;
+                    this.loginInBoxOut = true ;
+                    setTimeout( () => {
+                        this.loginInBoxIsShow = false ;
+                        this.fastEntryShow = true ;
+                        this.$nextTick( () => {
+                            this.$refs[ `loginForm` ].resetFields() ;
+                        } )
+                    }, 300 )
+                }
             },
             restLoginForm() {
                 this.$refs[ `loginForm` ].resetFields() ;
+            }
+        },
+        computed: {
+            isLogin: {
+                get() {
+                    return !!window.localStorage.getItem( 'isLogin' ) ;
+                },
+                set( val ) {
+                    window.localStorage.setItem( 'isLogin', val ) ;
+                }
             }
         },
         mounted() {
@@ -172,18 +207,37 @@
 }
 
 
+.close-tool-box-open {
+    position: absolute;
+    width: 20px;
+    height: 60px;
+    background-color: #8AE3E7;
+    top: 50%;
+    font-size: 26px;
+    line-height: 60px;
+    text-align: center;
+    border-radius: 0 10px 10px 0;
+    transform: translateY(-50%);
+    right: -20px;
+}
+.close-tool-box-open:hover {
+    box-shadow: 1px 1px 10px #8AE3E7;
+}
 .common-menu {
     width: 150px;
-    height: 200px;
-    background-color: yellow;
+    padding: 15px 0;
+    transition: transform .3s ease-in-out;
+    background: linear-gradient(to right bottom, #c0e3e7, #6EE4E7);
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
     position: fixed;
-    top: 0;
+    top: 185px;
     left: 0;
     text-align: center;
     z-index: 3;
 }
 .common-menu h4 {
-    margin: 10px 0;
+    margin: 0 0 10px 0;
     font-size: 13px;
     color: #999;
 }
@@ -191,15 +245,17 @@
 
 }
 .common-menu ul > li {
-    height: 30px;
-    line-height: 30px;
-    border-top: 1px solid #666;
+    height: 35px;
+    line-height: 35px;
+    border-top: 1px solid #e1e1e1;
 }
 .common-menu ul > li:nth-last-of-type(1) {
-    border-bottom: 1px solid #666;
+    border-bottom: 1px solid #e1e1e1;
 }
 .common-menu ul > li a {
     display: inline-block;
+    font-size: 15px;
+    color: #888888;
     width: 100%;
     height: 100%;
 }

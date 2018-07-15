@@ -31,6 +31,13 @@
                     <post-and-topping></post-and-topping>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="消息管理"
+                         :lazy="true"
+                         name="message-manager">
+                <div class="setting-min-height">
+                    <message-manager></message-manager>
+                </div>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -40,9 +47,10 @@
     import articleManager from './components/article-manager' ;
     import postAndTopping from './components/post-and-topping' ;
     import articleTypeManager from './components/article-type-manager' ;
+    import messageManager from './components/message-manager' ;
     export default {
         name: "settings",
-        components: { tagManager, articleManager, postAndTopping, articleTypeManager },
+        components: { tagManager, articleManager, postAndTopping, articleTypeManager, messageManager },
         data() {
             return {
                 activeName: window.sessionStorage.getItem( 'tabActiveName' ) ? window.sessionStorage.getItem( 'tabActiveName' ) : 'tag-manager'
