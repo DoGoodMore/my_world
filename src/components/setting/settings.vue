@@ -38,6 +38,13 @@
                     <message-manager></message-manager>
                 </div>
             </el-tab-pane>
+            <el-tab-pane label="待办事项"
+                         :lazy="true"
+                         name="todo-list">
+                <div class="setting-min-height">
+                    <todo-list></todo-list>
+                </div>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -48,9 +55,17 @@
     import postAndTopping from './components/post-and-topping' ;
     import articleTypeManager from './components/article-type-manager' ;
     import messageManager from './components/message-manager' ;
+    import todoList from './components/todo-list' ;
     export default {
         name: "settings",
-        components: { tagManager, articleManager, postAndTopping, articleTypeManager, messageManager },
+        components: {
+            tagManager,
+            articleManager,
+            postAndTopping,
+            articleTypeManager,
+            messageManager,
+            todoList
+        },
         data() {
             return {
                 activeName: window.sessionStorage.getItem( 'tabActiveName' ) ? window.sessionStorage.getItem( 'tabActiveName' ) : 'tag-manager'
