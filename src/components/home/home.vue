@@ -38,9 +38,11 @@
           </a>
       </div>
         <!-- canvas原子运动效果 -->
-      <div :ref="`home-container`" class="canvas-nest"></div>
+      <div :ref="`home-container`"
+           class="canvas-nest"></div>
         <!-- 快速选项 盒模型 -->
-      <div class="common-menu" :style="{ transform: `translateX(${toolBoxTransform})` }">
+      <div class="common-menu"
+           :style="{ transform: `translateX(${toolBoxTransform})` }">
           <h4>常用菜单</h4>
           <ul>
               <li>
@@ -85,11 +87,12 @@
             </header>
             <router-view></router-view>
         </div>
-
     </div>
 </template>
 
 <script>
+    import { loginByUsername } from '@/api/login' ;
+    import { saveToken, login } from "../../util/util" ;
     import CanvasNest from 'canvas-nest.js';
     export default {
         name: "home",
@@ -113,7 +116,7 @@
                 loginInBoxIn: false,
                 canvasNestInstance: null,
                 fastEntryShow: true,
-                // isLogin: !window.localStorage.getItem( 'isLogin' ),
+                isLogin: !!window.localStorage.getItem( 'isLogin' ),
                 toolBoxTransform: `-170px`,
                 arrowRotate: "0deg"
             }
@@ -128,11 +131,26 @@
             loginByUsername() {
                 this.$refs[ `loginForm` ].validate((valid) => {
                     if ( valid ) {
-
+                        loginByUsername( this.loginForm )
+                            .then( res => {
+                                const { status, token } = res ;
+                                if ( status === 0 ) {
+                                    saveToken( token ) ;
+                                    login() ;
+                                    this.$message( {
+                                        message: '登录成功!',
+                                        type: 'success'
+                                    } ) ;
+                                    this.hideLoginBox() ;
+                                    this.isLogin = true ;
+                                    console.log( this.isLogin ) ;
+                                }
+                            } )
                     }
                 })
             },
             showLoginOrToolBox() {
+                console.log( this.isLogin )
                 if ( !this.isLogin ) {
                     this.fastEntryShow = false ;
                     this.loginInBoxIn = true ;
@@ -146,6 +164,7 @@
                 }
             },
             hideLoginBox() {
+                console.log( this.isLogin )
                 if ( !this.isLogin ) {
                     this.loginInBoxIn = false ;
                     this.loginInBoxOut = true ;
@@ -162,7 +181,7 @@
                 this.$refs[ `loginForm` ].resetFields() ;
             }
         },
-        computed: {
+        /*computed: {
             isLogin: {
                 get() {
                     return !!window.localStorage.getItem( 'isLogin' ) ;
@@ -171,8 +190,9 @@
                     window.localStorage.setItem( 'isLogin', val ) ;
                 }
             }
-        },
+        },*/
         mounted() {
+            console.log( this.isLogin )
             this.canvasNestInstance = new CanvasNest(
                 this.$refs[ `home-container` ],
                 this.canvasNest
