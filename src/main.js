@@ -20,7 +20,7 @@ import { Carousel, CarouselItem, Row, Col, Card, Tag, Breadcrumb, BreadcrumbItem
     Menu, Submenu, MenuItem, MenuItemGroup, Tooltip,  Form, FormItem,
     Input, Button, Progress, Tabs, TabPane, Dialog, Upload, Message,
     Select, Option, Radio, Table, TableColumn, Pagination, ColorPicker,
-    Loading, MessageBox, Transfer, Cascader, Badge } from 'element-ui' ;
+    Loading, MessageBox, Transfer, Cascader, Badge, DatePicker } from 'element-ui' ;
 
 Vue.config.productionTip = false ;
 
@@ -29,6 +29,7 @@ Vue.prototype.$msgbox = MessageBox;
 Vue.prototype.$confirm = MessageBox.confirm ;
 Vue.use( Carousel ) ;
 Vue.use( Badge ) ;
+Vue.use( DatePicker ) ;
 Vue.use( Transfer ) ;
 Vue.use( Loading ) ;
 Vue.use( ColorPicker ) ;

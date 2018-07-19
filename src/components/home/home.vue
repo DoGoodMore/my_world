@@ -1,13 +1,14 @@
 <template>
     <div class="home-container">
-        <!--快速入口的按钮-->
+        <!--快速入口-->
       <div class="fast-entry"
            v-show="fastEntryShow"
            @click="showLoginOrToolBox">
           快速入口
       </div>
-        <!-- 登录弹窗盒模型 -->
+        <!-- 登录弹窗 -->
       <div class="login-in-box"
+           v-loading="loginBoxLoading"
            :class="{ 'login-in-box-out': loginInBoxOut, 'login-in-box-in': loginInBoxIn }">
           <h4>登录信息</h4>
           <el-form :model="loginForm"
@@ -40,29 +41,31 @@
         <!-- canvas原子运动效果 -->
       <div :ref="`home-container`"
            class="canvas-nest"></div>
-        <!-- 快速选项 盒模型 -->
+        <!-- 快速选项 -->
       <div class="common-menu"
            :style="{ transform: `translateX(${toolBoxTransform})` }">
           <h4>常用菜单</h4>
           <ul>
               <li>
-                  <el-badge :value="12" class="item">
-                      <a href="javascript:;">我的消息</a>
+                  <el-badge :value="messageCount"
+                            class="item">
+                      <a href="javascript:;"
+                         @click="lookMyMessage">我的消息</a>
                   </el-badge>
               </li>
               <li>
                   <el-badge :value="99" class="item">
-                      <a href="javascript:;">评论管理</a>
+                      <a href="javascript:;" @click="commentsManager">评论管理</a>
                   </el-badge>
               </li>
               <li>
-                  <a href="javascript:;">发表文章</a>
+                  <router-link to="/home/add-article">发表文章</router-link>
               </li>
               <li>
                   <a href="javascript:;">系统设置</a>
               </li>
               <li>
-                  <a href="javascript:;">修改站点公告</a>
+                  <a href="javascript:;" @click="editNotice">修改站点公告</a>
               </li>
           </ul>
           <a class="close-tool-box-open"
@@ -80,7 +83,7 @@
                     <li><router-link to="/home/index">网站首页</router-link></li>
                     <li><router-link to="/home/demo">demo</router-link></li>
                     <li><router-link to="/home/article">技术文章</router-link></li>
-                    <li><router-link to="/home/settings">网站设置</router-link></li>
+                    <li><router-link to="/home/settings" v-if="isLogin">网站设置</router-link></li>
                     <li><router-link to="/home/about">关于</router-link></li>
                     <li><router-link to="/home/contact">联系我</router-link></li>
                 </ul>
@@ -102,6 +105,7 @@
                     username: '',
                     password: ''
                 },
+                messageCount: 12,
                 loginRules: {
                     username: [ { required: true, message: '请输入用户名', trigger: 'blur' } ],
                     password: [ { required: true, message: '请输入密码', trigger: 'blur' } ]
@@ -111,26 +115,42 @@
                     count: 150,
                     opacity: 0.7
                 },
-                loginInBoxIsShow: true,
+                loginInBoxIsShow: false,
                 loginInBoxOut: false,
                 loginInBoxIn: false,
                 canvasNestInstance: null,
                 fastEntryShow: true,
                 isLogin: !!window.localStorage.getItem( 'isLogin' ),
                 toolBoxTransform: `-170px`,
-                arrowRotate: "0deg"
+                arrowRotate: "0deg",
+                loginBoxLoading: false
             }
         },
         created() {
         },
         methods: {
+            commentsManager() {
+                //todo: 添加评论管理的接口
+            },
             hideToolBox() {
                 this.toolBoxTransform = `-170px` ;
                 this.arrowRotate = "-180deg" ;
             },
+            editNotice() {
+                window.sessionStorage.setItem( 'tabActiveName', 'announcement-topping' ) ;
+                this.$router.push( '/home/settings' ) ;
+                this.hideToolBox() ;
+            },
+            lookMyMessage() {
+                //todo: 无法正常跳转对应的tab
+                window.sessionStorage.setItem( 'tabActiveName', 'message-manager' ) ;
+                this.$router.push( '/home/settings' ) ;
+                this.hideToolBox() ;
+            },
             loginByUsername() {
                 this.$refs[ `loginForm` ].validate((valid) => {
                     if ( valid ) {
+                        this.loginBoxLoading = true ;
                         loginByUsername( this.loginForm )
                             .then( res => {
                                 const { status, token } = res ;
@@ -143,14 +163,16 @@
                                     } ) ;
                                     this.hideLoginBox() ;
                                     this.isLogin = true ;
-                                    console.log( this.isLogin ) ;
+                                    setTimeout( () => {
+                                        this.loginBoxLoading = false ;
+                                        this.showLoginOrToolBox() ;
+                                    }, 300 ) ;
                                 }
                             } )
                     }
                 })
             },
             showLoginOrToolBox() {
-                console.log( this.isLogin )
                 if ( !this.isLogin ) {
                     this.fastEntryShow = false ;
                     this.loginInBoxIn = true ;
@@ -164,8 +186,7 @@
                 }
             },
             hideLoginBox() {
-                console.log( this.isLogin )
-                if ( !this.isLogin ) {
+                if ( !this.isLogin && this.loginInBoxIsShow ) {
                     this.loginInBoxIn = false ;
                     this.loginInBoxOut = true ;
                     setTimeout( () => {
@@ -181,18 +202,16 @@
                 this.$refs[ `loginForm` ].resetFields() ;
             }
         },
-        /*computed: {
-            isLogin: {
-                get() {
-                    return !!window.localStorage.getItem( 'isLogin' ) ;
-                },
-                set( val ) {
-                    window.localStorage.setItem( 'isLogin', val ) ;
+        watch: {
+            $route() {
+                if ( this.isLogin ) {
+                    this.hideToolBox() ;
+                } else {
+                    if ( this.loginInBoxIsShow ) this.hideLoginBox() ;
                 }
             }
-        },*/
+        },
         mounted() {
-            console.log( this.isLogin )
             this.canvasNestInstance = new CanvasNest(
                 this.$refs[ `home-container` ],
                 this.canvasNest

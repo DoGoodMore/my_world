@@ -156,7 +156,6 @@
         },
         methods: {
             hotTagUpdate( row ) {
-                console.log( row )
                 updateHotTags( { _id: row._id, hot: !row.hot } )
                     .then( res => {
                         const { status } = res ;
