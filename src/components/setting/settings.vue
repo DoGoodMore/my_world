@@ -75,6 +75,12 @@
             handleClick( val ) {
                 window.sessionStorage.setItem( 'tabActiveName', val.name ) ;
             }
+        },
+        beforeRouteEnter( to, from, next ) {
+            if ( !window.localStorage.getItem( 'isLogin' ) ) {
+                next( '/home/article' ) ;
+            }
+            next() ;
         }
     }
 </script>
