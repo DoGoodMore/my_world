@@ -79,6 +79,7 @@
         beforeRouteEnter( to, from, next ) {
             if ( !window.localStorage.getItem( 'isLogin' ) ) {
                 next( '/home/article' ) ;
+                return false ;
             }
             next() ;
         }

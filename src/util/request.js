@@ -1,5 +1,5 @@
 import axios from 'axios' ;
-import { paramsMethod } from "./util" ;
+import { paramsMethod, saveToken } from "./util" ;
 
 
 const request = axios.create( {
@@ -20,6 +20,8 @@ request.interceptors.request.use( config => {
 
 request.interceptors.response.use( response => {
     //在此处对返回的请求统一处理
+    const { token } = response.data ;
+    if ( token ) saveToken( token ) ;
     return response.data
 }, err => console.log( err, "request.js" ) ) ;
 
