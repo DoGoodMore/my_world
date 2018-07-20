@@ -65,6 +65,7 @@
         </div>
 
         <el-dialog :title="articleTypeDialogTitle"
+                   append-to-body
                    :visible.sync="articleTypeDialog">
             <el-form :rules="rules"
                      :ref="`form`"

@@ -101,7 +101,9 @@
                        @click="handleAdd">添加</el-button>
         </div>
 
-        <el-dialog title="新增标签" :visible.sync="addTagDialog">
+        <el-dialog title="新增标签"
+                   append-to-body
+                   :visible.sync="addTagDialog">
             <el-form :ref="`form`"
                      :model="form"
                      label-position="left"
