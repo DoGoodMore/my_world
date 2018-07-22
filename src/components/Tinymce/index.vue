@@ -83,6 +83,7 @@ export default {
         advlist_number_styles: 'default',
         imagetools_cors_hosts: ['www.tinymce.com', 'codepen.io'],
         default_link_target: '_blank',
+        language: 'zh_CN',
         link_title: false,
         init_instance_callback: editor => {
           if (_this.value) {
