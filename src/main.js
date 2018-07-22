@@ -6,7 +6,7 @@ import './static/style/common.css' ;//公告样式
 import './static/style/fonts/style.css' ; //字体图标
 import 'highlight.js/styles/zenburn.css' ;
 import hljs from 'highlight.js'
-
+import './processControl' ;
 
 //重新触发全局的高亮显示方法
 Vue.directive('hljs', el => {
