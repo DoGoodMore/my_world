@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
         "/proxy" : {
-            target: 'http://172.16.28.97:3001',
+            target: 'http://localhost:3001',
             pathRewrite: {
                 '^/proxy' : "" //需要reWrite重写的请求路径
             }

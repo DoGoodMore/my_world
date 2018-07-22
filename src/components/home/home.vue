@@ -274,7 +274,7 @@
     top: 185px;
     left: 0;
     text-align: center;
-    z-index: 3;
+    z-index: 6;
 }
 .common-menu h4 {
     margin: 0 0 10px 0;
