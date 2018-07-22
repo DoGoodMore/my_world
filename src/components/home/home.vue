@@ -153,7 +153,7 @@
                         this.loginBoxLoading = true ;
                         loginByUsername( this.loginForm )
                             .then( res => {
-                                const { status, token } = res ;
+                                const { status, token, messageCount } = res ;
                                 if ( status === 0 ) {
                                     saveToken( token ) ;
                                     login() ;
@@ -162,6 +162,7 @@
                                         type: 'success'
                                     } ) ;
                                     this.hideLoginBox() ;
+                                    this.messageCount = messageCount ;
                                     this.isLogin = true ;
                                     setTimeout( () => {
                                         this.loginBoxLoading = false ;

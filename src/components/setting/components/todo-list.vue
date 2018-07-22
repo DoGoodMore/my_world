@@ -211,13 +211,13 @@
             showDialog() {
                 this.todoDialogTitle = '新增待办事项' ;
                 this.formDisabled = false ;
-                this.form = Object.assign( this.form, {
+                this.$set( this, 'form', Object.assign( this.form, {
                     todoTitle: '',
                     todoType: '',
                     finishDate: '',
                     content: '',
                     completeDate: ''
-                } ) ;
+                } ) ) ;
                 this.rules.completeDate[ 0 ].required = false ;
                 this.todoDialog = true ;
                 this.$nextTick( () => {
