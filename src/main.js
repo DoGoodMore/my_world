@@ -1,9 +1,9 @@
 import Vue from 'vue' ;
 import router from './router/router' ;
 import App from './App' ;
-import './static/style/reset.css' ;
-import './static/style/common.css' ;
-import './static/style/fonts/style.css' ;
+import './static/style/reset.css' ; //默认样式充值
+import './static/style/common.css' ;//公告样式
+import './static/style/fonts/style.css' ; //字体图标
 import 'highlight.js/styles/zenburn.css' ;
 import hljs from 'highlight.js'
 

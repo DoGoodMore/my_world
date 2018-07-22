@@ -409,17 +409,3 @@
     background-color: rgb( 247, 247, 247 );
 }
 </style>
-<style>
-
-body,html {
-    height: 100%;
-    background-color: rgb( 247, 247, 247 );
-}
-.canvas-nest {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-</style>

@@ -54,6 +54,10 @@
                                v-if="!scope.row.isFinish"
                                @click="updateTodo( scope.row )">编辑</el-button>
                     <el-button size="mini"
+                               type="success"
+                               v-if="scope.row.isFinish"
+                               @click="lookDetailTodo( scope.row )">详情</el-button>
+                    <el-button size="mini"
                                type="danger"
                                @click="handleDelete( scope.row )">删除</el-button>
                 </template>
@@ -76,40 +80,6 @@
                        @click="showDialog">添加</el-button>
         </div>
 
-        <el-dialog title="提示"
-                   append-to-body
-                   :visible.sync="messageDetailDialogVisible"
-                   width="30%"
-                   center>
-            <el-form :label-position="`left`"
-                     label-width="80px"
-                     :model="messageInfo">
-                <el-form-item label="发送人">
-                    <el-input disabled
-                              v-model="messageInfo.username"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱地址">
-                    <el-input disabled
-                              v-model="messageInfo.email"></el-input>
-                </el-form-item>
-                <el-form-item label="发送时间">
-                    <el-input disabled
-                              v-model="messageInfo.sendTime"></el-input>
-                </el-form-item>
-                <el-form-item label="发送内容">
-                    <el-input disabled
-                              type="textarea"
-                              resize="vertical"
-                              rows="5"
-                              v-model="messageInfo.content"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="messageDetailDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="messageDetailDialogVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <el-dialog :title="todoDialogTitle"
                    custom-class="todo-dialog"
                    append-to-body
@@ -124,19 +94,33 @@
                      style='width:100%;;padding-bottom: 0;'>
                 <el-form-item label="待办类型"
                               prop="todoType">
-                    <el-input v-model="form.todoType"></el-input>
+                    <el-input v-model="form.todoType"
+                              :disabled="formDisabled"></el-input>
                 </el-form-item>
                 <el-form-item label="事项标题" prop="todoTitle">
-                    <el-input v-model="form.todoTitle"></el-input>
+                    <el-input v-model="form.todoTitle"
+                              :disabled="formDisabled"></el-input>
                 </el-form-item>
-                <el-form-item label="计划日期" prop="finishDate">
+                <el-form-item label="计划日期"
+                              v-if="!formDisabled"
+                              prop="finishDate">
                     <el-date-picker v-model="form.finishDate"
+                                    type="date"
+                                    placeholder="选择日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="完成时间"
+                              v-else
+                              prop="completeDate">
+                    <el-date-picker v-model="form.completeDate"
+                                    disabled
                                     type="date"
                                     placeholder="选择日期">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="待办内容" prop="content">
                     <el-input v-model="form.content"
+                              :disabled="formDisabled"
                               :rows="4"
                               type="textarea"></el-input>
                 </el-form-item>
@@ -146,8 +130,11 @@
                 <el-button @click="handleAdd"
                            v-if="todoDialogTitle === '新增待办事项'"
                            type="primary">确 定</el-button>
+                <el-button @click="todoDialog = false"
+                           v-if="todoDialogTitle === '查看事项详情'"
+                           type="primary">确 定</el-button>
                 <el-button @click="handleEditSubmit"
-                           v-else
+                           v-else-if="todoDialogTitle === '修改待办事项'"
                            type="primary">修 改</el-button>
             </div>
         </el-dialog>
@@ -166,8 +153,10 @@
                     todoTitle: '',
                     todoType: '',
                     finishDate: '',
-                    content: ''
+                    content: '',
+                    completeDate: ''
                 },
+                formDisabled: false,
                 todoDialogTitle: '新增待办事项',
                 todoDialog: false,
                 list: [],
@@ -179,17 +168,23 @@
                     isFinish: false
                 },
                 total: 0,
-                messageDetailDialogVisible: false,
-                messageInfo: {},
                 rules: {
                     todoTitle: [{ required: true, message: '请输入标题', trigger: 'blur' }],
                     todoType: [{ required: true, message: '请输入待办事项的类型', trigger: 'blur' }],
                     finishDate: [{ required: true, message: '请选择计划完成的日期', trigger: 'blur' }],
-                    content: [{ required: true, message: '请输入待办的具体内容', trigger: 'blur' }]
+                    content: [{ required: true, message: '请输入待办的具体内容', trigger: 'blur' }],
+                    completeDate: [{ required: false, message: '', trigger: 'blur' }]
                 }
             }
         },
         methods: {
+            lookDetailTodo( row ) {
+                this.todoDialogTitle = '查看事项详情' ;
+                this.formDisabled = true ;
+                this.form = Object.assign( this.form, row ) ;
+                this.rules.completeDate[ 0 ].required = true ;
+                this.todoDialog = true ;
+            },
             finishTodo( row ) {
                 this.tableLoading = true ;
                 finishTodo( { _id: row._id } ).then( res => {
@@ -205,6 +200,8 @@
             },
             updateTodo( row ) {
                 this.todoDialogTitle = '修改待办事项' ;
+                this.rules.completeDate[ 0 ].required = false ;
+                this.formDisabled = false ;
                 this.form = Object.assign( this.form, row ) ;
                 this.todoDialog = true ;
                 this.$nextTick( () => {
@@ -213,6 +210,15 @@
             },
             showDialog() {
                 this.todoDialogTitle = '新增待办事项' ;
+                this.formDisabled = false ;
+                this.form = Object.assign( this.form, {
+                    todoTitle: '',
+                    todoType: '',
+                    finishDate: '',
+                    content: '',
+                    completeDate: ''
+                } ) ;
+                this.rules.completeDate[ 0 ].required = false ;
                 this.todoDialog = true ;
                 this.$nextTick( () => {
                     this.$refs[ `form` ].resetFields() ;
