@@ -1,6 +1,6 @@
 <template>
     <div class="width">
-        <el-tabs v-model="activeName">
+        <el-tabs v-model="activeName" @tab-click="changeDemoType">
             <el-tab-pane label="实例一" name="first"></el-tab-pane>
             <el-tab-pane label="实例二" name="second"></el-tab-pane>
             <el-tab-pane label="实例三" name="third"></el-tab-pane>
@@ -8,7 +8,7 @@
         </el-tabs>
         <div class="content"
              :style="{ height: `1094px` }">
-            <ul class="demo-list">
+            <!--<ul class="demo-list">
                 <li style="left: 100px;" class="demo-list-item">
                     <a href="javascript:;">
                         <div class="demo-item-content">
@@ -93,6 +93,28 @@
                         </div>
                     </a>
                 </li>
+            </ul>-->
+            <ul class="demo-list">
+                <li v-for="( demo, index ) in list"
+                    class="demo-list-item"
+                    :style="{ top: demo.top, left: demo.left,right: demo.right, display: demo.display, opacity: demo.opacity }"
+                    :key="index">
+                    {{index}}
+                    <a href="javascript:;">
+                        <div class="demo-item-content">
+                            <img :src="demo.poster"
+                                 alt="img">
+                            <div class="demo-item-inner">
+                                <div class="demo-item-inner-txt">
+                                    <h4>{{demo.title}}</h4>
+                                    <p>{{ demo.description }}</p>
+                                    <a class="btn"
+                                       href="javascript:;">View More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -105,8 +127,85 @@
         data() {
             return {
                 activeName: 'first',
-                imgList
+                imgList,
+                list: [
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 1,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 3,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 3,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 1,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 3,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 1,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    }
+                ]
             }
+        },
+        methods: {
+            changeDemoType( val ) {
+                console.log( val ) ;
+                if ( val.label === '实例二' ) {
+                    this.list.map( ( item, index ) => {
+                        //todo: 新增之前元素淡出的动画
+                    } ) ;
+                    this.list = this.list.filter( item => {
+                        return item.type === 1 ;
+                    } ) ;
+                    this.list.map( ( item, index ) => {
+                        item.display = 'block' ;
+                        item.opacity = '1' ;
+                        item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
+                        if ( index % 2 ) {
+                            item.left = '100px' ;
+                            item.right = 'auto' ;
+                        } else {
+                            this.left = 'auto' ;
+                            item.right = '100px' ;
+                        }
+                    } )
+                }
+            }
+        },
+        created() {
+            this.list.map( ( item, index ) => {
+                item.display = 'block' ;
+                item.opacity = '1' ;
+                item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
+                if ( index % 2 ) {
+                    item.left = '100px' ;
+                    item.right = 'auto' ;
+                } else {
+                    this.left = 'auto' ;
+                    item.right = '100px' ;
+                }
+            } )
         }
     }
 </script>
@@ -118,6 +217,7 @@
 .demo-list .demo-list-item {
     width: 419px;
     height: 294px;
+    transition: all linear .3s;
     position: absolute;
 }
 .demo-item-content {
