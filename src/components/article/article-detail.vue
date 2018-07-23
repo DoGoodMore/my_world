@@ -62,8 +62,20 @@
                                   :style="{ background: changeColorToRgb( item.background, .2 ), color: item.color, borderColor: changeColorToRgb( item.color, .1 ) }">{{item.label}}</span></a>
                     </div>
                     <div class="actions">
-                        <a href="javascript:;"><i class="icon-good"></i>{{articleData[ `good` ]}}</a>
-                        <a href="javascript:;"><i class="icon-not-good"></i>{{articleData[ `noGood` ]}}</a>
+                        <a href="javascript:;"
+                           class="like-this-article"
+                           :style="{ color: isLikedThisArticle ? `rgb(118, 228, 231)` : '' }"
+                           @click="likeThisArticle">
+                            <i class="icon-good"></i>{{articleData[ `good` ].length}}
+                            <span class="add-one" :class="{ 'add-one-active': isLike }">+1</span>
+                        </a>
+                        <a href="javascript:;"
+                           class="not-like-this-article"
+                           :style="{ color: isNotLikedThisArticle ? `rgb(241, 90, 36)` : '' }"
+                           @click="notLikeThisArticle">
+                            <i class="icon-not-good"></i>{{articleData[ `noGood` ].length}}
+                            <span class="add-one" :class="{ 'add-one-active': isNotLike }">+1</span>
+                        </a>
                         <a href="javascript:;"><i class="icon-coments"></i>{{articleData ? articleData.comments.length : 0}}</a>
                     </div>
                     <div class="pre-or-next">
@@ -124,7 +136,7 @@
 
 <script>
     import rightShow from '../home/components/right-show' ;
-    import { getArticleDetail, getLikeArticles } from '@/api/article' ;
+    import { getArticleDetail, getLikeArticles, likeArticle, notLikeArticle } from '@/api/article' ;
     import { getAllTags } from '@/api/tags' ;
     import { getAllTypeList } from '@/api/type' ;
     import goToTop from '../components/go-to-top' ;
@@ -133,21 +145,13 @@
         name: "article-detail",
         data() {
             return {
-                tagsArr: [
-                    {
-                        type: 'info',
-                        text: 'Node'
-                    },
-                    {
-                        type: 'success',
-                        text: 'Javascript'
-                    },
-                    {
-                        type: 'error',
-                        text: 'Vue'
-                    }
-                ],
+                isLike: false,
+                isNotLike: false,
+                isLikedThisArticle: false,
+                isNotLikedThisArticle: false,
+                tagsArr: [],
                 articleId: '',
+                addOneIsDisabled: false,
                 articleData: {
                     comments: [],
                     content: '',
@@ -184,6 +188,76 @@
             }
         },
         methods: {
+            notLikeThisArticle() {
+                if ( this.isNotLikedThisArticle ) {
+                    this.$message( {
+                        message: '已经踩过了哟',
+                        type: 'error'
+                    } ) ;
+                    return ;
+                }
+                notLikeArticle( { _id: this.articleId } )
+                    .then( res => {
+                        const { status, message } = res ;
+                        if ( status === 0 ) {
+                            this.$message( {
+                                message: '操作成功',
+                                type: 'success'
+                            } ) ;
+                            this.isNotLikedThisArticle = true ;
+                            this.articleData.noGood.push( '' ) ;
+                            this.showActiveAddOneNoLike() ;
+                        } else {
+                            this.$message( {
+                                message: message,
+                                type: 'error'
+                            } )
+                        }
+                    } ) ;
+            },
+            likeThisArticle() {
+                if ( this.isLikedThisArticle ) {
+                    this.$message( {
+                        message: '已经赞过了哟',
+                        type: 'error'
+                    } )
+                    return ;
+                }
+                likeArticle( { _id: this.articleId } )
+                    .then( res => {
+                        const { status, message } = res ;
+                        if ( status === 0 ) {
+                            this.$message( {
+                                message: '操作成功',
+                                type: 'success'
+                            } ) ;
+                            this.isLikedThisArticle = true ;
+                            this.articleData.good.push( '' ) ;
+                            this.showActiveAddOne() ;
+                        } else {
+                            this.$message( {
+                                message: message,
+                                type: 'error'
+                            } )
+                        }
+                    } ) ;
+            },
+            showActiveAddOne() {
+                if ( this.addOneIsDisabled ) return ;
+                this.addOneIsDisabled = true ;
+                this.isLike = true ;
+                setTimeout( () => {
+                    this.isLike = false ;
+                }, 1000 )
+            },
+            showActiveAddOneNoLike() {
+                if ( this.addOneIsDisabledNotLike ) return ;
+                this.addOneIsDisabledNotLike = true ;
+                this.isNotLike = true ;
+                setTimeout( () => {
+                    this.isNotLike = false ;
+                }, 1000 )
+            },
             articleChange(id) {
                 this.$router.push( `/home/article-detail?id=${id}` ) ;
                 this.$refs[ 'goTop' ].backToTop() ;
@@ -226,10 +300,14 @@
             getArticleDetail() {
                 return new Promise( ( resolve, reject ) => {
                     getArticleDetail( { id: this.articleId } ).then( res => {
-                        const { status, data, pre, next } = res ;
+                        const { status, data, pre, next, isLike, isNotLike } = res ;
                         if ( status === 0 ) {
                             this.preArticle = pre ;
                             this.nextArticle = next ;
+                            this.isLikedThisArticle = isLike ;
+                            this.addOneIsDisabled = isLike ;
+                            this.isNotLikedThisArticle = isNotLike ;
+                            this.addOneIsDisabledNotLike = isNotLike ;
                             resolve( data )
                         } else {
                             resolve( [] )
@@ -364,6 +442,16 @@
 </script>
 
 <style scoped>
+@keyframes add-one-active {
+    0% {
+        opacity: 1;
+        transform: translateY( 30% );
+    }
+    100% {
+        opacity: 0;
+        transform: translateY( -50% );
+    }
+}
 .article-title {
     font-size: 24px;
     line-height: 30px;
@@ -373,6 +461,25 @@
     margin: 0px 0 20px 0;
     text-align: center;
     font-family: "Microsoft YaHei", 'Myriad Pro','Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.add-one-active {
+    animation: add-one-active ease-in-out 1000ms forwards ;
+}
+.like-this-article, .not-like-this-article {
+    position: relative;
+}
+/*点赞+1的文字样式*/
+.like-this-article .add-one,
+.not-like-this-article .add-one {
+    display: block;
+    opacity: 0;
+    position: absolute;
+    top: -100%;
+    left: 0;
+    color: rgb(118, 228, 231);
+}
+.not-like-this-article .add-one {
+    color: red;
 }
 .copyright-area {
     background-color: #f0f0f0;

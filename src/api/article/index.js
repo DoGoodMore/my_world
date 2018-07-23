@@ -123,3 +123,25 @@ export function getArticleListByType(data) {
         data
     } )
 }
+/**
+ *  为谋篇文章点赞
+ * @param data
+ */
+export function likeArticle(data) {
+    return request( {
+        url: proxy + '/article/likeArticle',
+        method: 'POST',
+        data
+    } )
+}
+/**
+ *  为某篇文章点踩
+ * @param data
+ */
+export function notLikeArticle(data) {
+    return request( {
+        url: proxy + '/article/notLikeArticle',
+        method: 'POST',
+        data
+    } )
+}
