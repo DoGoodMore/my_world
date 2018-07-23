@@ -67,6 +67,9 @@
               <li>
                   <a href="javascript:;" @click="editNotice">修改站点公告</a>
               </li>
+              <li>
+                  <a href="javascript:;" @click="loginOut">退出登录</a>
+              </li>
           </ul>
           <a class="close-tool-box-open"
              @click="hideToolBox"
@@ -95,7 +98,7 @@
 
 <script>
     import { loginByUsername } from '@/api/login' ;
-    import { saveToken, login } from "../../util/util" ;
+    import { saveToken, login, loginOut } from "../../util/util" ;
     import CanvasNest from 'canvas-nest.js';
     export default {
         name: "home",
@@ -105,7 +108,7 @@
                     username: '',
                     password: ''
                 },
-                messageCount: 12,
+                messageCount: 0,
                 loginRules: {
                     username: [ { required: true, message: '请输入用户名', trigger: 'blur' } ],
                     password: [ { required: true, message: '请输入密码', trigger: 'blur' } ]
@@ -129,6 +132,12 @@
         created() {
         },
         methods: {
+            loginOut() {
+                this.isLogin = false ;
+                loginOut() ;
+                this.hideToolBox() ;
+                this.$router.push( '/home/article' ) ;
+            },
             commentsManager() {
                 //todo: 添加评论管理的接口
             },
