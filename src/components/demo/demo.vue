@@ -97,7 +97,13 @@
             <ul class="demo-list">
                 <li v-for="( demo, index ) in list"
                     class="demo-list-item"
-                    :style="{ top: demo.top, left: demo.left,right: demo.right, display: demo.display, opacity: demo.opacity }"
+                    :style="{
+                     top: demo.top,
+                     left: demo.left,
+                     transform: demo.scale,
+                     right: demo.right,
+                     display: demo.display,
+                     opacity: demo.opacity }"
                     :key="index">
                     {{index}}
                     <a href="javascript:;">
@@ -132,18 +138,6 @@
                     {
                         poster: imgList,
                         title: 'STU UNGER RISE',
-                        type: 1,
-                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
-                    },
-                    {
-                        poster: imgList,
-                        title: 'STU UNGER RISE',
-                        type: 3,
-                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
-                    },
-                    {
-                        poster: imgList,
-                        title: 'STU UNGER RISE',
                         type: 3,
                         description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
                     },
@@ -156,6 +150,12 @@
                     {
                         poster: imgList,
                         title: 'STU UNGER RISE',
+                        type: 1,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
                         type: 3,
                         description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
                     },
@@ -163,6 +163,12 @@
                         poster: imgList,
                         title: 'STU UNGER RISE',
                         type: 1,
+                        description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
+                    },
+                    {
+                        poster: imgList,
+                        title: 'STU UNGER RISE',
+                        type: 3,
                         description: 'Accessories Here you can find the best computer monitor, printer, scanner, speaker, projector. hardware and more',
                     }
                 ]
@@ -171,25 +177,22 @@
         methods: {
             changeDemoType( val ) {
                 console.log( val ) ;
+                let count = 0 ;
                 if ( val.label === '实例二' ) {
                     this.list.map( ( item, index ) => {
-                        //todo: 新增之前元素淡出的动画
-                    } ) ;
-                    this.list = this.list.filter( item => {
-                        return item.type === 1 ;
-                    } ) ;
-                    this.list.map( ( item, index ) => {
-                        item.display = 'block' ;
-                        item.opacity = '1' ;
-                        item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
-                        if ( index % 2 ) {
-                            item.left = '100px' ;
-                            item.right = 'auto' ;
+                        if ( item.type !== 1 ) {
+                            item.scale = 'scale(0)'
                         } else {
-                            this.left = 'auto' ;
-                            item.right = '100px' ;
+                            console.log( index ) ;
+                            item.top = `${ Math.floor( count / 2 ) * 400 }px` ;
+                            if ( count % 2 ) {
+                                item.left = '50%' ;
+                            } else {
+                                item.left = '0' ;
+                            }
+                            count ++ ;
                         }
-                    } )
+                    } ) ;
                 }
             }
         },
@@ -197,13 +200,12 @@
             this.list.map( ( item, index ) => {
                 item.display = 'block' ;
                 item.opacity = '1' ;
+                item.scale = 'scale(1)' ;
                 item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
                 if ( index % 2 ) {
-                    item.left = '100px' ;
-                    item.right = 'auto' ;
+                    item.left = '0' ;
                 } else {
-                    this.left = 'auto' ;
-                    item.right = '100px' ;
+                    item.left = '50%' ;
                 }
             } )
         }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box {
+            width: 200px;
+            height: 200px;
+            background-color: #000000;
+            position: absolute;
+            left: 100px;
+            top: 0;
+            transition: all linear .3s;
+        }
+        #box2 {
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            position: absolute;
+            transition: all linear .3s;
+            left: 600px;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="box" class="box"></div>
+<div id="box2"></div>
+<button id="btn">点击开始动画</button>
+<script>
+    window.onload = function () {
+        var boxNode = document.getElementById( 'box' ) ;
+        var btnNode = document.getElementById( 'btn' ) ;
+        var box2Node = document.getElementById( 'box2' ) ;
+        btnNode.onclick = function () {
+            boxNode.style.top = '500px' ;
+            boxNode.style.left = '500px' ;
+
+            box2Node.style.top = '500px' ;
+            box2Node.style.left = '800px' ;
+        }
+    }
+</script>
+</body>
+</html>
