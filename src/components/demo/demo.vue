@@ -100,10 +100,7 @@
                     :style="{
                      top: demo.top,
                      left: demo.left,
-                     transform: demo.scale,
-                     right: demo.right,
-                     display: demo.display,
-                     opacity: demo.opacity }"
+                     transform: demo.scale }"
                     :key="index">
                     {{index}}
                     <a href="javascript:;">
@@ -178,6 +175,17 @@
             changeDemoType( val ) {
                 console.log( val ) ;
                 let count = 0 ;
+                if ( val.label === '实例一' ) {
+                    this.list.map( ( item, index ) => {
+                        item.scale = 'scale(1)' ;
+                        item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
+                        if ( index % 2 ) {
+                            item.left = '0' ;
+                        } else {
+                            item.left = '50%' ;
+                        }
+                    } )
+                }
                 if ( val.label === '实例二' ) {
                     this.list.map( ( item, index ) => {
                         if ( item.type !== 1 ) {
@@ -198,8 +206,6 @@
         },
         created() {
             this.list.map( ( item, index ) => {
-                item.display = 'block' ;
-                item.opacity = '1' ;
                 item.scale = 'scale(1)' ;
                 item.top = `${ Math.floor( index / 2 ) * 400 }px` ;
                 if ( index % 2 ) {
